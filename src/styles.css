@@ -68,11 +68,6 @@ h2 {
   margin: 0 0 4px;
 }
 
-h2 a {
-  color: inherit;
-  text-decoration: none;
-}
-
 /* Decorative illustrations */
 .banner {
   display: block;
@@ -729,10 +724,4 @@ tr.clickable:hover td {
 
 .howto li {
   margin: 3px 0;
-}
-
-.howto a {
-  display: inline-block;
-  margin: 8px 0 4px;
-  color: var(--accent);
 }

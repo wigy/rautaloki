@@ -61,15 +61,7 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
       <div className="card-title">
         {icon && <img className="ex-icon" src={icon} alt="" />}
         <div className="card-head">
-          <h2>
-            {ex.url ? (
-              <a href={ex.url} target="_blank" rel="noreferrer">
-                {ex.name}
-              </a>
-            ) : (
-              ex.name
-            )}
-          </h2>
+          <h2>{ex.name}</h2>
           <span className="muted">
             {prog?.name ?? cycle.program} · started {fmtDate(cycle.started)}
           </span>
@@ -160,7 +152,7 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
         </button>
       </div>
 
-      {howTo && <HowToPanel id={cycle.exercise} url={ex.url} />}
+      {howTo && <HowToPanel id={cycle.exercise} />}
 
       {editing && (
         <Settings
@@ -180,7 +172,7 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   )
 }
 
-function HowToPanel({ id, url }: { id: string; url: string | null }) {
+function HowToPanel({ id }: { id: string }) {
   const h = HOWTO[id]
   return (
     <div className="settings howto">
@@ -206,11 +198,6 @@ function HowToPanel({ id, url }: { id: string; url: string | null }) {
           <li key={t}>{t}</li>
         ))}
       </ul>
-      {url && (
-        <a href={url} target="_blank" rel="noreferrer">
-          Pictures and video
-        </a>
-      )}
     </div>
   )
 }
