@@ -1,0 +1,589 @@
+[
+  {
+    "id": "db-side-bend",
+    "name": "DB Side Bend",
+    "mainMuscle": "Abdominals",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/dumbbell-side-bend"
+  },
+  {
+    "id": "c-seated-crunch",
+    "name": "C Seated Crunch",
+    "mainMuscle": "Abdominals",
+    "otherMuscles": [],
+    "equipment": [
+      "Cable",
+      "Bench"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/cable-seated-crunch"
+  },
+  {
+    "id": "seated-twist",
+    "name": "Seated Twist",
+    "mainMuscle": "Abdominals",
+    "otherMuscles": [],
+    "equipment": [
+      "Barbell",
+      "Chair"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/seated-barbell-twist"
+  },
+  {
+    "id": "press-sit-up-level",
+    "name": "Press Sit-up (level)",
+    "mainMuscle": "Abdominals",
+    "otherMuscles": [
+      "Chest",
+      "Shoulders",
+      "Tricepts"
+    ],
+    "equipment": [
+      "Barbell",
+      "Bench",
+      "2 Chairs"
+    ],
+    "level": "Expert",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/press-sit-up"
+  },
+  {
+    "id": "db-curl",
+    "name": "DB Curl",
+    "mainMuscle": "Bicepts",
+    "otherMuscles": [
+      "Forearms"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/dumbbell-bicep-curl"
+  },
+  {
+    "id": "curl",
+    "name": "Curl",
+    "mainMuscle": "Bicepts",
+    "otherMuscles": [
+      "Forearms"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-curl"
+  },
+  {
+    "id": "db-hammer-curl",
+    "name": "DB Hammer Curl",
+    "mainMuscle": "Bicepts",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/hammer-curls"
+  },
+  {
+    "id": "db-concentration-curl",
+    "name": "DB Concentration Curl",
+    "mainMuscle": "Bicepts",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbell",
+      "Chair"
+    ],
+    "level": "Beginner",
+    "url": "https://www.bodybuilding.com/exercises/detail/view/name/concentration-curls"
+  },
+  {
+    "id": "seated-calf-raise",
+    "name": "Seated Calf Raise",
+    "mainMuscle": "Calves",
+    "otherMuscles": [],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-seated-calf-raise"
+  },
+  {
+    "id": "db-calf-raise",
+    "name": "DB Calf Raise",
+    "mainMuscle": "Calves",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbells",
+      "Log"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/standing-dumbbell-calf-raise"
+  },
+  {
+    "id": "db-1-leg-calf-raise",
+    "name": "DB 1-leg Calf Raise",
+    "mainMuscle": "Calves",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/dumbbell-seated-one-leg-calf-raise"
+  },
+  {
+    "id": "incline-bench-press",
+    "name": "Incline Bench Press",
+    "mainMuscle": "Chest",
+    "otherMuscles": [
+      "Shoulders",
+      "Tricepts"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack",
+      "Bench"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-incline-bench-press-medium-grip"
+  },
+  {
+    "id": "bench-press",
+    "name": "Bench Press",
+    "mainMuscle": "Chest",
+    "otherMuscles": [
+      "Shoulders",
+      "Tricepts"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack",
+      "Bench"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-bench-press-medium-grip"
+  },
+  {
+    "id": "db-bench-press",
+    "name": "DB Bench Press",
+    "mainMuscle": "Chest",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbells",
+      "Bench"
+    ],
+    "level": "Beginner",
+    "url": "https://www.bodybuilding.com/exercises/main/popup/name/dumbbell-bench-press"
+  },
+  {
+    "id": "db-p-u-wrist-curl",
+    "name": "DB P-U Wrist Curl",
+    "mainMuscle": "Forearms",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbells",
+      "Chair"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/seated-dumbbell-palms-up-wrist-curl"
+  },
+  {
+    "id": "glute-bridge",
+    "name": "Glute Bridge",
+    "mainMuscle": "Glutes",
+    "otherMuscles": [
+      "Calves",
+      "Hamstrings"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-glute-bridge"
+  },
+  {
+    "id": "romanian-deadlift",
+    "name": "Romanian Deadlift",
+    "mainMuscle": "Hamstrings",
+    "otherMuscles": [
+      "Calves",
+      "Glutes",
+      "Lower Back"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/romanian-deadlift"
+  },
+  {
+    "id": "sumo-deadlift",
+    "name": "Sumo Deadlift",
+    "mainMuscle": "Hamstrings",
+    "otherMuscles": [],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Intermediate",
+    "url": "https://www.bodybuilding.com/exercises/sumo-deadlift"
+  },
+  {
+    "id": "bent-arm-pullover",
+    "name": "Bent-Arm Pullover",
+    "mainMuscle": "Lats",
+    "otherMuscles": [
+      "Chest",
+      "Shoulders",
+      "Tricepts"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack",
+      "Bench"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/bent-arm-barbell-pullover"
+  },
+  {
+    "id": "deadlift",
+    "name": "Deadlift",
+    "mainMuscle": "Lower Back",
+    "otherMuscles": [
+      "Calves",
+      "Forearms",
+      "Glutes",
+      "Hamstrings",
+      "Lats",
+      "Middle Back",
+      "Quadricepts",
+      "Traps"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-deadlift"
+  },
+  {
+    "id": "seated-good-mornings",
+    "name": "Seated Good Mornings",
+    "mainMuscle": "Lower Back",
+    "otherMuscles": [
+      "Hamstrings",
+      "Neck"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack",
+      "Bench",
+      "Foamroll"
+    ],
+    "level": "Intermediate",
+    "url": "https://www.bodybuilding.com/exercises/seated-good-mornings"
+  },
+  {
+    "id": "bent-over-row",
+    "name": "Bent Over Row",
+    "mainMuscle": "Middle Back",
+    "otherMuscles": [
+      "Bicepts",
+      "Lats",
+      "Shoulders"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/bent-over-barbell-row"
+  },
+  {
+    "id": "db-incline-row",
+    "name": "DB Incline Row",
+    "mainMuscle": "Middle Back",
+    "otherMuscles": [
+      "Bicepts",
+      "Forearms",
+      "Lats",
+      "Shoulders"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Bench",
+      "2 Chairs"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/dumbbell-incline-row"
+  },
+  {
+    "id": "db-1-arm-row",
+    "name": "DB 1-arm Row",
+    "mainMuscle": "Middle Back",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbell",
+      "Bench"
+    ],
+    "level": "Beginner",
+    "url": "https://www.bodybuilding.com/exercises/detail/view/name/one-arm-dumbbell-row"
+  },
+  {
+    "id": "t-bar-row",
+    "name": "T-Bar Row",
+    "mainMuscle": "Middle Back",
+    "otherMuscles": [],
+    "equipment": [
+      "T-Bar"
+    ],
+    "level": "Intermediate",
+    "url": "https://www.bodybuilding.com/exercises/detail/view/name/t-bar-row"
+  },
+  {
+    "id": "back-squat",
+    "name": "Back Squat",
+    "mainMuscle": "Quadriceps",
+    "otherMuscles": [
+      "Calves",
+      "Glutes",
+      "Hamstrings",
+      "Lower Back"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-squat"
+  },
+  {
+    "id": "squat-to-a-bench",
+    "name": "Squat to a Bench",
+    "mainMuscle": "Quadriceps",
+    "otherMuscles": [
+      "Calves",
+      "Glutes",
+      "Hamstrings",
+      "Lower Back"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack",
+      "Bench"
+    ],
+    "level": "Expert",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-squat-to-a-bench"
+  },
+  {
+    "id": "reverse-lunge",
+    "name": "Reverse Lunge",
+    "mainMuscle": "Quadriceps",
+    "otherMuscles": [
+      "Calves",
+      "Glutes",
+      "Hamstrings"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-reverse-lunge"
+  },
+  {
+    "id": "db-squat",
+    "name": "DB Squat",
+    "mainMuscle": "Quadriceps",
+    "otherMuscles": [
+      "Calves",
+      "Glutes",
+      "Hamstrings",
+      "Lower Back"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/dumbbell-squat"
+  },
+  {
+    "id": "db-lunges",
+    "name": "DB Lunges",
+    "mainMuscle": "Quadriceps",
+    "otherMuscles": [
+      "Calves",
+      "Glutes",
+      "Hamstrings"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "3 Chairs"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/dumbbell-lunges"
+  },
+  {
+    "id": "db-goblet-squat",
+    "name": "DB Goblet Squat",
+    "mainMuscle": "Quadriceps",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "level": "Beginner",
+    "url": "https://www.bodybuilding.com/exercises/main/popup/name/dumbbell-goblet-squat"
+  },
+  {
+    "id": "db-front-raise",
+    "name": "DB Front Raise",
+    "mainMuscle": "Shoulders",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/front-dumbbell-raise"
+  },
+  {
+    "id": "shoulder-press",
+    "name": "Shoulder Press",
+    "mainMuscle": "Shoulders",
+    "otherMuscles": [
+      "Chest",
+      "Triceps"
+    ],
+    "equipment": [
+      "Barbell",
+      "Rack",
+      "Bench"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/barbell-shoulder-press"
+  },
+  {
+    "id": "db-shoulder-press",
+    "name": "DB Shoulder Press",
+    "mainMuscle": "Shoulders",
+    "otherMuscles": [
+      "Tricepts"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Chair"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/dumbbell-shoulder-press"
+  },
+  {
+    "id": "db-reverse-flyes",
+    "name": "DB Reverse Flyes",
+    "mainMuscle": "Shoulders",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbells",
+      "Bench"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/reverse-flyes"
+  },
+  {
+    "id": "military-press-standing",
+    "name": "Military Press Standing",
+    "mainMuscle": "Shoulders",
+    "otherMuscles": [],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Intermediate",
+    "url": "https://www.youtube.com/watch?v=FuV6OZIngJ4"
+  },
+  {
+    "id": "db-upright-row",
+    "name": "DB Upright Row",
+    "mainMuscle": "Traps",
+    "otherMuscles": [
+      "Bicepts",
+      "Shoulders"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/standing-dumbbell-upright-row"
+  },
+  {
+    "id": "upright-barbell-row",
+    "name": "Upright Barbell Row",
+    "mainMuscle": "Traps",
+    "otherMuscles": [],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Beginner",
+    "url": "https://www.bodybuilding.com/exercises/upright-barbell-row"
+  },
+  {
+    "id": "db-floor-press",
+    "name": "DB Floor Press",
+    "mainMuscle": "Triceps",
+    "otherMuscles": [
+      "Chest",
+      "Shoulders"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/dumbbell-floor-press"
+  },
+  {
+    "id": "french-press",
+    "name": "French Press",
+    "mainMuscle": "Triceps",
+    "otherMuscles": [
+      "Shoulders"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/standing-overhead-barbell-triceps-extension"
+  },
+  {
+    "id": "db-tate-press",
+    "name": "DB Tate Press",
+    "mainMuscle": "Triceps",
+    "otherMuscles": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "level": "Intermediate",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/tate-press"
+  },
+  {
+    "id": "db-plank-extension",
+    "name": "DB Plank Extension",
+    "mainMuscle": "Triceps",
+    "otherMuscles": [
+      "Abdominals"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "level": "Beginner",
+    "url": "http://www.bodybuilding.com/exercises/detail/view/name/triceps-plank-extension"
+  },
+  {
+    "id": "skullcrusher",
+    "name": "Skullcrusher",
+    "mainMuscle": "Triceps",
+    "otherMuscles": [],
+    "equipment": [
+      "Barbell"
+    ],
+    "level": "Intermediate",
+    "url": "https://www.bodybuilding.com/exercises/lying-close-grip-barbell-triceps-extension-behind-the-head"
+  }
+]

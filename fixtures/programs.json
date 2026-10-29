@@ -1,0 +1,376 @@
+[
+  {
+    "id": "original",
+    "name": "Original",
+    "weeks": [
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "2 x MAX",
+        "pct": 0.85
+      },
+      {
+        "scheme": "2 x MAX",
+        "pct": 0.85
+      },
+      {
+        "scheme": "4 x 10",
+        "pct": 0.8
+      },
+      {
+        "scheme": "4 x 10",
+        "pct": 0.8
+      },
+      {
+        "scheme": "4 x 10",
+        "pct": 0.8
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.1
+      }
+    ]
+  },
+  {
+    "id": "10-x-10",
+    "name": "10 x 10",
+    "weeks": [
+      {
+        "scheme": "10 x 10",
+        "pct": 0.585
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.615
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.63
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.05
+      }
+    ]
+  },
+  {
+    "id": "2-x-max",
+    "name": "2 x MAX",
+    "weeks": [
+      {
+        "scheme": "2 x MAX",
+        "pct": 0.835
+      },
+      {
+        "scheme": "2 x MAX",
+        "pct": 0.85
+      },
+      {
+        "scheme": "2 x MAX",
+        "pct": 0.865
+      },
+      {
+        "scheme": "2 x MAX",
+        "pct": 0.88
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.05
+      }
+    ]
+  },
+  {
+    "id": "4-x-10",
+    "name": "4 x 10",
+    "weeks": [
+      {
+        "scheme": "4 x 10",
+        "pct": 0.785
+      },
+      {
+        "scheme": "4 x 10",
+        "pct": 0.8
+      },
+      {
+        "scheme": "4 x 10",
+        "pct": 0.815
+      },
+      {
+        "scheme": "4 x 10",
+        "pct": 0.83
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.05
+      }
+    ]
+  },
+  {
+    "id": "5-x-5",
+    "name": "5 x 5",
+    "weeks": [
+      {
+        "scheme": "5 x 5",
+        "pct": 0.82
+      },
+      {
+        "scheme": "5 x 5",
+        "pct": 0.84
+      },
+      {
+        "scheme": "5 x 5",
+        "pct": 0.86
+      },
+      {
+        "scheme": "5 x 5",
+        "pct": 0.88
+      },
+      {
+        "scheme": "5 x 5",
+        "pct": 0.9
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.05
+      }
+    ]
+  },
+  {
+    "id": "maxpower",
+    "name": "MaxPower",
+    "weeks": [
+      {
+        "scheme": "3 x 7",
+        "pct": 0.7
+      },
+      {
+        "scheme": "3 x 7",
+        "pct": 0.73
+      },
+      {
+        "scheme": "4 x 8",
+        "pct": 0.73
+      },
+      {
+        "scheme": "2 x 6 fast",
+        "pct": 0.65
+      },
+      {
+        "scheme": "4 x 2",
+        "pct": 0.9
+      },
+      {
+        "scheme": "6 x 1",
+        "pct": 0.95
+      },
+      {
+        "scheme": "5 x 5",
+        "pct": 0.7
+      },
+      {
+        "scheme": "3 x 7",
+        "pct": 0.73
+      },
+      {
+        "scheme": "4 x 8",
+        "pct": 0.75
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.1
+      }
+    ]
+  },
+  {
+    "id": "muscle",
+    "name": "Muscle",
+    "weeks": [
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.5
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.615
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.515
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.63
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.53
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.075
+      }
+    ]
+  },
+  {
+    "id": "muscle-2",
+    "name": "Muscle 2",
+    "weeks": [
+      {
+        "scheme": "3 x 20",
+        "pct": 0.5
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.515
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.615
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.53
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.63
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.075
+      }
+    ]
+  },
+  {
+    "id": "starter",
+    "name": "Starter",
+    "weeks": [
+      {
+        "scheme": "10 x 10",
+        "pct": 0.5
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.425
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.525
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.45
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.55
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.475
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.575
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.1
+      }
+    ]
+  },
+  {
+    "id": "starter-2",
+    "name": "Starter 2",
+    "weeks": [
+      {
+        "scheme": "3 x 20",
+        "pct": 0.4
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.525
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.425
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.55
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.45
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.575
+      },
+      {
+        "scheme": "3 x 20",
+        "pct": 0.525
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.1
+      }
+    ]
+  },
+  {
+    "id": "short-original",
+    "name": "Short Original",
+    "weeks": [
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "10 x 10",
+        "pct": 0.6
+      },
+      {
+        "scheme": "2 x MAX",
+        "pct": 0.85
+      },
+      {
+        "scheme": "4 x 10",
+        "pct": 0.85
+      },
+      {
+        "scheme": "4 x 10",
+        "pct": 0.85
+      },
+      {
+        "scheme": "TEST",
+        "pct": 1.05
+      }
+    ]
+  }
+]

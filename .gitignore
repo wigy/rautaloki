@@ -1,0 +1,5 @@
+node_modules/
+dist/
+# Personal training data: live data and the original sheet exports.
+data/
+import/xlsx/
