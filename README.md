@@ -64,6 +64,16 @@ All in `shared/training.ts`:
   (pair), Dumbbell (single), other
 - **new best** = max(old best, test result); a skipped test keeps the old best
 
+## Timer
+
+The ▶ Timer button on a training card runs the week's sets and speaks the calls aloud
+(browser speech synthesis, English), with the timings of the old time2xercise timer
+(`shared/timer.ts`): 15 s to get ready, a "lift" per repeat every 5 s (3 s when *fast*,
+7 s for doubles) with the last three counted down "3, 2, 1", "relax" at the end of a
+set, and the next round announced 6 s before a rest ends. Rest is 1 min in 10-set work,
+3 min for singles and MAX sets, otherwise 2 min. MAX and TEST sets run until *Set done*
+is tapped. The screen is kept on while the timer is open.
+
 ## Import
 
 `import/import_sheets.py` converted the sheets once (2026-10-29) from the xlsx

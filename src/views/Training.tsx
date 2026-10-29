@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { timerPlan } from '../../shared/timer.ts'
 import { currentWeek, finishCycle, plan, recordScore, today, undoScore } from '../../shared/training.ts'
 import type { Cycle, Program } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import empty from '../assets/empty.webp'
+import { exerciseIcon } from '../icons.ts'
 import { exercise, fmtDate, kg, program } from '../lookup.ts'
+import { SetTimer } from './SetTimer.tsx'
 
 export function Training(ctx: Ctx) {
   const active = ctx.user.cycles.filter((c) => !c.done)
@@ -30,10 +33,13 @@ export function Training(ctx: Ctx) {
 function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const ex = exercise(ctx.data, cycle.exercise)
   const prog = program(ctx.data, cycle.program)
+  const icon = exerciseIcon(cycle.exercise)
   const p = prog ? plan(cycle, prog, ex, ctx.data.weights) : null
   const suggested = p?.load?.total ?? p?.proposal ?? null
   const [value, setValue] = useState(suggested?.toString() ?? '')
   const [editing, setEditing] = useState(false)
+  const [timing, setTiming] = useState(false)
+  const segments = useMemo(() => (p ? timerPlan(p.scheme) : null), [p?.scheme])
   useEffect(() => setValue(suggested?.toString() ?? ''), [suggested, p?.week])
 
   const change = (fn: (c: Cycle) => Cycle) =>
@@ -50,19 +56,22 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
 
   return (
     <section className="card">
-      <div className="card-head">
-        <h2>
-          {ex.url ? (
-            <a href={ex.url} target="_blank" rel="noreferrer">
-              {ex.name}
-            </a>
-          ) : (
-            ex.name
-          )}
-        </h2>
-        <span className="muted">
-          {prog?.name ?? cycle.program} · started {fmtDate(cycle.started)}
-        </span>
+      <div className="card-title">
+        {icon && <img className="ex-icon" src={icon} alt="" />}
+        <div className="card-head">
+          <h2>
+            {ex.url ? (
+              <a href={ex.url} target="_blank" rel="noreferrer">
+                {ex.name}
+              </a>
+            ) : (
+              ex.name
+            )}
+          </h2>
+          <span className="muted">
+            {prog?.name ?? cycle.program} · started {fmtDate(cycle.started)}
+          </span>
+        </div>
       </div>
 
       <Weeks cycle={cycle} prog={prog} />
@@ -74,7 +83,22 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
           <div className="plan-week">
             Week {p.week + 1}/{prog.weeks.length}
             <strong className={p.isTest ? 'test' : ''}>{p.scheme}</strong>
+            {segments && (
+              <button type="button" className="timer-open" onClick={() => setTiming(true)}>
+                ▶ Timer
+              </button>
+            )}
           </div>
+          {timing && segments && (
+            <SetTimer
+              segments={segments}
+              title={ex.name}
+              icon={icon}
+              scheme={p.scheme}
+              weight={[kg(p.load?.total ?? p.proposal), p.plates].filter(Boolean).join(' · ')}
+              onClose={() => setTiming(false)}
+            />
+          )}
           {p.proposal === null ? (
             <p className="muted">Set an old best to get weight proposals.</p>
           ) : (

@@ -230,6 +230,19 @@ label > select {
   column-gap: 10px;
 }
 
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ex-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
 .muted {
   color: var(--muted);
   font-weight: normal;
@@ -581,5 +594,115 @@ tr.clickable:hover td {
 }
 
 .picked > div {
+  flex: 1;
+}
+
+/* Set timer */
+.plan-week .timer-open {
+  margin-left: auto;
+  min-height: 36px;
+  padding: 4px 12px;
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.timer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+}
+
+.timer-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timer-title {
+  flex: 1;
+}
+
+.timer-art {
+  width: min(55vw, 240px);
+  aspect-ratio: 1;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.timer-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.timer-phase {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.timer-phase.lift,
+.timer-big.lift {
+  color: var(--accent);
+}
+
+.timer-phase.rest {
+  color: var(--text-2);
+}
+
+.timer-big {
+  font-size: min(36vw, 11rem);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-rep {
+  font-size: 1.4rem;
+  font-weight: 600;
+  min-height: 1.4em;
+}
+
+.timer-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--line);
+  overflow: hidden;
+  margin: 8px 0 16px;
+}
+
+.timer-bar > div {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.1s linear;
+}
+
+.timer-main {
+  width: 100%;
+  max-width: 360px;
+  min-height: 64px;
+  font-size: 1.3rem;
+}
+
+.timer-row {
+  justify-content: center;
+  width: 100%;
+  max-width: 360px;
+}
+
+.timer-row button {
   flex: 1;
 }
