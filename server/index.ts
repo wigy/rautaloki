@@ -150,7 +150,8 @@ async function api(req: IncomingMessage, res: ServerResponse, path: string) {
     return json(res, 200, user, { etag: etag(user) })
   }
   if (m && req.method === 'PUT') {
-    const version = req.headers['if-match']
+    // A compressing proxy (caddy encode, nginx gzip) weakens the ETag to W/"..."; the content is the same.
+    const version = req.headers['if-match']?.replace(/^W\//, '')
     const tag = await store.saveUser(m[1], (await body(req)) as never, version)
     console.log(new Date().toISOString(), 'saved', m[1])
     return json(res, 200, { ok: true }, { etag: tag })
