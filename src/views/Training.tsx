@@ -38,7 +38,6 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const p = prog ? plan(cycle, prog, ex, ctx.data.weights) : null
   const suggested = p?.load?.total ?? p?.proposal ?? null
   const [value, setValue] = useState(suggested?.toString() ?? '')
-  const [editing, setEditing] = useState(false)
   const [timing, setTiming] = useState(false)
   const [howTo, setHowTo] = useState(false)
   const segments = useMemo(() => (p ? timerPlan(p.scheme) : null), [p?.scheme])
@@ -55,6 +54,16 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const valid = value.trim() !== '' && Number.isFinite(n) && n >= 0
   const week = currentWeek(cycle)
   const hasScores = cycle.scores.some((s) => s !== null)
+  // Quarter-kilo steps, rounded so repeated taps do not drift in floating point.
+  const adjust = (step: number) => change((c) => ({ ...c, add: Math.round((c.add + step) * 4) / 4 }))
+  const end = () => {
+    if (confirm(`End ${ex.name} now? The old best is kept.`))
+      change((c) => ({ ...c, done: true, finished: today(), newBest: c.oldBest }))
+  }
+  const remove = () => {
+    if (confirm(`Delete this ${ex.name} cycle and its scores?`))
+      ctx.update((u) => ({ ...u, cycles: u.cycles.filter((c) => c.id !== cycle.id) }))
+  }
 
   return (
     <section className="card">
@@ -94,14 +103,25 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
             />
           )}
           {p.proposal === null ? (
-            <p className="muted">Set an old best to get weight proposals.</p>
+            <OldBest onSet={(ob) => change((c) => ({ ...c, oldBest: c.oldBest ?? ob }))} />
           ) : (
             <>
               <div className="plan-kg">{kg(p.load?.total ?? p.proposal)}</div>
               <div className="plan-plates">{p.plates}</div>
               <div className="muted small">
                 Plan {kg(p.target)} · old best {kg(cycle.oldBest)}
-                {cycle.add ? ` · adjust ${cycle.add > 0 ? '+' : ''}${cycle.add} kg` : ''}
+              </div>
+              <div className="adjust">
+                <button type="button" onClick={() => adjust(-0.25)} aria-label="Lower the proposal by 0.25 kg">
+                  −
+                </button>
+                <span>
+                  Adjust {cycle.add > 0 ? '+' : ''}
+                  {cycle.add} kg
+                </span>
+                <button type="button" onClick={() => adjust(0.25)} aria-label="Raise the proposal by 0.25 kg">
+                  +
+                </button>
               </div>
             </>
           )}
@@ -144,30 +164,21 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
         <button className="link" onClick={() => setHowTo(!howTo)}>
           {howTo ? 'Close how to' : 'How to'}
         </button>
-        <button className="link" onClick={() => setEditing(!editing)}>
-          {editing ? 'Close settings' : 'Settings'}
-        </button>
         <button className="link" onClick={() => ctx.go('history', cycle.exercise)}>
           History
         </button>
+        <span className="card-actions-end">
+          <button className="link end" onClick={end}>
+            End cycle
+          </button>
+          <button className="link danger" onClick={remove}>
+            Delete
+          </button>
+        </span>
       </div>
 
       {howTo && <HowToPanel id={cycle.exercise} />}
 
-      {editing && (
-        <Settings
-          cycle={cycle}
-          onChange={change}
-          onEnd={() => {
-            if (confirm(`End ${ex.name} now? The old best is kept.`))
-              change((c) => ({ ...c, done: true, finished: today(), newBest: c.oldBest }))
-          }}
-          onDelete={() => {
-            if (confirm(`Delete this ${ex.name} cycle and its scores?`))
-              ctx.update((u) => ({ ...u, cycles: u.cycles.filter((c) => c.id !== cycle.id) }))
-          }}
-        />
-      )}
     </section>
   )
 }
@@ -220,55 +231,26 @@ export function Weeks({ cycle, prog }: { cycle: Cycle; prog?: Program }) {
   )
 }
 
-function Settings({
-  cycle,
-  onChange,
-  onEnd,
-  onDelete,
-}: {
-  cycle: Cycle
-  onChange: (fn: (c: Cycle) => Cycle) => void
-  onEnd: () => void
-  onDelete: () => void
-}) {
-  const [oldBest, setOldBest] = useState(cycle.oldBest?.toString() ?? '')
-  const [add, setAdd] = useState(cycle.add.toString())
-  const parse = (s: string) => (s.trim() === '' ? null : Number(s.replace(',', '.')))
-  const ob = parse(oldBest)
-  const ad = parse(add) ?? 0
-  const valid = (ob === null || Number.isFinite(ob)) && Number.isFinite(ad)
+/** The old best is fixed once set: targets and performances are all relative to it. */
+function OldBest({ onSet }: { onSet: (kg: number) => void }) {
+  const [value, setValue] = useState('')
+  const n = Number(value.replace(',', '.'))
+  const valid = value.trim() !== '' && Number.isFinite(n) && n > 0
   return (
-    <form
-      className="settings"
-      onSubmit={(e) => {
-        e.preventDefault()
-        // The old best is fixed once set: targets and performances are all relative to it.
-        if (valid) onChange((c) => ({ ...c, oldBest: c.oldBest ?? ob, add: ad }))
-      }}
-    >
-      {cycle.oldBest === null ? (
-        <label>
-          Old best (kg)
-          <input inputMode="decimal" value={oldBest} onChange={(e) => setOldBest(e.target.value)} />
-        </label>
-      ) : (
-        <p className="muted small">Old best {kg(cycle.oldBest)}, fixed for this cycle.</p>
-      )}
-      <label>
-        Adjust proposal (kg)
-        <input inputMode="decimal" value={add} onChange={(e) => setAdd(e.target.value)} />
-      </label>
-      <div className="row">
+    <>
+      <p className="muted">Set an old best to get weight proposals.</p>
+      <form
+        className="entry"
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (valid) onSet(n)
+        }}
+      >
+        <input inputMode="decimal" value={value} onChange={(e) => setValue(e.target.value)} aria-label="Old best (kg)" />
         <button className="primary" disabled={!valid}>
-          Apply
+          Set old best
         </button>
-        <button type="button" onClick={onEnd}>
-          End cycle
-        </button>
-        <button type="button" className="danger" onClick={onDelete}>
-          Delete
-        </button>
-      </div>
-    </form>
+      </form>
+    </>
   )
 }
