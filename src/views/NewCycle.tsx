@@ -1,17 +1,12 @@
 import { useMemo, useState } from 'react'
 import { newCycle, records, today } from '../../shared/training.ts'
-import type { Exercise } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import banner from '../assets/new.webp'
 import { kg } from '../lookup.ts'
+import { ExercisePicker } from './ExercisePicker.tsx'
 
 export function NewCycle(ctx: Ctx) {
   const recs = useMemo(() => records(ctx.user), [ctx.user])
-  const byMuscle = useMemo(() => {
-    const m = new Map<string, Exercise[]>()
-    for (const e of ctx.data.catalog) m.set(e.mainMuscle, [...(m.get(e.mainMuscle) ?? []), e])
-    return [...m.entries()]
-  }, [ctx.data])
   const active = new Set(ctx.user.cycles.filter((c) => !c.done).map((c) => c.exercise))
 
   const [exId, setExId] = useState('')
@@ -36,63 +31,60 @@ export function NewCycle(ctx: Ctx) {
       onSubmit={(e) => {
         e.preventDefault()
         if (!valid || !prog) return
-        ctx.update((u) => ({ ...u, cycles: [...u.cycles, newCycle(exId, prog, ob, today())] }))
+        ctx.update((u) => ({
+          ...u,
+          cycles: [...u.cycles, newCycle(exId, prog, ob, today())],
+        }))
         ctx.go('training')
       }}
     >
       <img className="banner" src={banner} alt="" style={{ objectPosition: '70% 40%' }} />
       <h2>New cycle</h2>
-      <label>
-        Exercise
-        <select value={exId} onChange={(e) => pick(e.target.value)} required>
-          <option value="">Choose…</option>
-          {byMuscle.map(([muscle, list]) => (
-            <optgroup key={muscle} label={muscle}>
-              {list.map((e) => (
-                <option key={e.id} value={e.id}>
-                  {e.name}
-                  {recs.has(e.id) ? ` (${kg(recs.get(e.id)!.best)})` : ''}
-                  {active.has(e.id) ? ' (in progress)' : ''}
+      <ExercisePicker
+        catalog={ctx.data.catalog}
+        value={exId}
+        onChange={pick}
+        note={(id) => (recs.has(id) ? `best ${kg(recs.get(id)!.best)}` : undefined)}
+        active={active}
+      />
+      {exId && (
+        <>
+          <label>
+            Program
+            <select value={progId} onChange={(e) => setProgId(e.target.value)}>
+              {ctx.data.programs.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.weeks.length} weeks)
                 </option>
               ))}
-            </optgroup>
-          ))}
-        </select>
-      </label>
-      <label>
-        Program
-        <select value={progId} onChange={(e) => setProgId(e.target.value)}>
-          {ctx.data.programs.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name} ({p.weeks.length} weeks)
-            </option>
-          ))}
-        </select>
-      </label>
-      {prog && (
-        <ol className="program-preview">
-          {prog.weeks.map((w, i) => (
-            <li key={i}>
-              <span className="muted">W{i + 1}</span> {w.scheme}{' '}
-              <span className="muted">
-                {Math.round(w.pct * 1000) / 10} %{ob ? ` ≈ ${kg(Math.round(ob * w.pct * 2) / 2)}` : ''}
-              </span>
-            </li>
-          ))}
-        </ol>
+            </select>
+          </label>
+          {prog && (
+            <ol className="program-preview">
+              {prog.weeks.map((w, i) => (
+                <li key={i}>
+                  <span className="muted">W{i + 1}</span> {w.scheme}{' '}
+                  <span className="muted">
+                    {Math.round(w.pct * 1000) / 10} %{ob ? ` ≈ ${kg(Math.round(ob * w.pct * 2) / 2)}` : ''}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          )}
+          <label>
+            Old best (kg)
+            <input
+              inputMode="decimal"
+              value={oldBest}
+              onChange={(e) => setOldBest(e.target.value)}
+              placeholder="your current max"
+            />
+          </label>
+          <button className="primary" disabled={!valid}>
+            Start
+          </button>
+        </>
       )}
-      <label>
-        Old best (kg)
-        <input
-          inputMode="decimal"
-          value={oldBest}
-          onChange={(e) => setOldBest(e.target.value)}
-          placeholder="your current max"
-        />
-      </label>
-      <button className="primary" disabled={!valid}>
-        Start
-      </button>
     </form>
   )
 }
