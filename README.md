@@ -1,7 +1,6 @@
 # Rautaloki
 
-Weight training log that replaces the "Weight Training <name>" Google Sheets
-(folder *Sport & Health*). Each exercise is trained in **cycles**: a program of
+Weight training log for a few users. Each exercise is trained in **cycles**: a program of
 weekly schemes (e.g. *Original*: 4 × "10 x 10", 2 × "2 x MAX", 3 × "4 x 10", TEST)
 run from the exercise's **old best**, ending in a test week that sets the new best.
 
@@ -64,17 +63,17 @@ stale tab gets a 412 instead of overwriting another device's entry.
 New users are created from the login screen as `data/users/<id>.json`, with the id
 derived from the name.
 
-## Rules (from the sheets' formulas)
+## Rules
 
 All in `shared/training.ts`:
 
-- **target** for week *w* = MROUND(old best × program % of week *w*, 0.5)
+- **target** for week *w* = old best × program % of week *w*, rounded to the nearest 0.5 kg
 - **performance** of a done week = kg lifted / that week's target
-- **proposal** for the current week = MROUND(target × best performance so far + adjustment, 0.5)
+- **proposal** for the current week = target × best performance so far + adjustment, rounded to the nearest 0.5 kg
 - **load** = the heaviest weight in the equipment's table not above the proposal,
   shown as the plates to put on. Barbell 7 kg, dumbbell handle 1 kg; equipment
-  kind is chosen from the catalog in the sheet's order: Barbell, Dumbbells
-  (pair), Dumbbell (single), other
+  kind is chosen from the catalog in this order: Barbell, Dumbbells (pair),
+  Dumbbell (single), other
 - **new best** = max(old best, test result); a skipped test keeps the old best
 
 ## Timer
@@ -86,21 +85,3 @@ The ▶ Timer button on a training card runs the week's sets and speaks the call
 set, and the next round announced 6 s before a rest ends. Rest is 1 min in 10-set work,
 3 min for singles and MAX sets, otherwise 2 min. MAX and TEST sets run until *Set done*
 is tapped. The screen is kept on while the timer is open.
-
-## Import
-
-`import/import_sheets.py` converted the sheets once (2026-10-29) from the xlsx
-exports in `import/xlsx/` (not in git, personal like `data/`): `master.xlsx`
-(Weight Master: catalog, programs, weight tables) and one workbook per user
-(Scores sheet → cycles). It checks the
-derived records against each user's Records sheet; all matched. Points to know
-when reading old data:
-
-- Google Sheets read d/m/y input as m/d/y whenever the day was ≤ 12, so those
-  cells hold real dates with day and month swapped, and the importer swaps them
-  back. Cells it could not parse stayed as text and are read as d/m/y.
-- A cycle counts as done if marked `F` or if it has a finish date.
-- Not imported: one `#VALUE!` finish date and one text note in an "Add?" column.
-
-`uv run import/import_sheets.py --check` repeats the analysis without writing.
-Running it without `--check` **overwrites** `data/` with the sheet contents.
