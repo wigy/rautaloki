@@ -3,74 +3,78 @@ import { improvement, records } from '../../shared/training.ts'
 import type { Cycle } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import { exercise, fmtDate, kg, program } from '../lookup.ts'
+import { ExercisePicker } from './ExercisePicker.tsx'
 import { Weeks } from './Training.tsx'
 
 export function History(ctx: Ctx & { exercise?: string; setExercise: (id: string) => void }) {
   const recs = useMemo(() => records(ctx.user), [ctx.user])
   const done = useMemo(() => [...recs.keys()].map((id) => exercise(ctx.data, id)), [recs, ctx.data])
+  const active = new Set(ctx.user.cycles.filter((c) => !c.done).map((c) => c.exercise))
+  const [choosing, setChoosing] = useState(false)
   const selected = ctx.exercise && recs.has(ctx.exercise) ? ctx.exercise : done[0]?.id
   const cycles = ctx.user.cycles
     .filter((c) => c.exercise === selected)
     .sort((a, b) => (a.started ?? '').localeCompare(b.started ?? ''))
 
   if (!selected) return <p className="empty">No history yet.</p>
-  const ex = exercise(ctx.data, selected)
 
   return (
     <section className="card">
-      <select value={selected} onChange={(e) => ctx.setExercise(e.target.value)} aria-label="Exercise">
-        {done
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.name}
-            </option>
-          ))}
-      </select>
-      <h2>
-        {ex.name} <span className="muted">best {kg(recs.get(selected)?.best)}</span>
-      </h2>
-      <BestChart cycles={cycles} programName={(id) => program(ctx.data, id)?.name ?? id} />
-      <table className="history">
-        <thead>
-          <tr>
-            <th>Started</th>
-            <th>Program</th>
-            <th className="num">Old</th>
-            <th className="num">New</th>
-            <th className="num">Gain</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cycles
-            .slice()
-            .reverse()
-            .map((c) => {
-              const gain = improvement(c)
-              return (
-                <Fragment key={c.id}>
-                  <tr className="cycle">
-                    <td>{fmtDate(c.started)}</td>
-                    <td>
-                      {program(ctx.data, c.program)?.name ?? c.program}
-                      {!c.done && <span className="badge">in progress</span>}
-                    </td>
-                    <td className="num">{c.oldBest ?? '–'}</td>
-                    <td className="num">{c.done ? (c.newBest ?? '–') : ''}</td>
-                    <td className="num nowrap">
-                      {gain === null ? '' : `${gain > 0 ? '+' : ''}${(gain * 100).toFixed(1)} %`}
-                    </td>
-                  </tr>
-                  <tr className="cycle-weeks">
-                    <td colSpan={5}>
-                      <Weeks cycle={c} prog={program(ctx.data, c.program)} />
-                    </td>
-                  </tr>
-                </Fragment>
-              )
-            })}
-        </tbody>
-      </table>
+      <ExercisePicker
+        catalog={done}
+        value={choosing ? '' : selected}
+        onChange={(id) => {
+          setChoosing(!id)
+          if (id) ctx.setExercise(id)
+        }}
+        note={(id) => `best ${kg(recs.get(id)?.best)}`}
+        active={active}
+      />
+      {!choosing && (
+        <>
+          <BestChart cycles={cycles} programName={(id) => program(ctx.data, id)?.name ?? id} />
+          <table className="history">
+            <thead>
+              <tr>
+                <th>Started</th>
+                <th>Program</th>
+                <th className="num">Old</th>
+                <th className="num">New</th>
+                <th className="num">Gain</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cycles
+                .slice()
+                .reverse()
+                .map((c) => {
+                  const gain = improvement(c)
+                  return (
+                    <Fragment key={c.id}>
+                      <tr className="cycle">
+                        <td>{fmtDate(c.started)}</td>
+                        <td>
+                          {program(ctx.data, c.program)?.name ?? c.program}
+                          {!c.done && <span className="badge">in progress</span>}
+                        </td>
+                        <td className="num">{c.oldBest ?? '–'}</td>
+                        <td className="num">{c.done ? (c.newBest ?? '–') : ''}</td>
+                        <td className="num nowrap">
+                          {gain === null ? '' : `${gain > 0 ? '+' : ''}${(gain * 100).toFixed(1)} %`}
+                        </td>
+                      </tr>
+                      <tr className="cycle-weeks">
+                        <td colSpan={5}>
+                          <Weeks cycle={c} prog={program(ctx.data, c.program)} />
+                        </td>
+                      </tr>
+                    </Fragment>
+                  )
+                })}
+            </tbody>
+          </table>
+        </>
+      )}
     </section>
   )
 }
@@ -86,7 +90,8 @@ interface Point {
 function points(cycles: Cycle[], programName: (id: string) => string): Point[] {
   const out: Point[] = []
   const first = cycles.find((c) => c.started && c.oldBest !== null)
-  if (first) out.push({ t: Date.parse(first.started!), date: first.started!, kg: first.oldBest!, label: 'starting best' })
+  if (first)
+    out.push({ t: Date.parse(first.started!), date: first.started!, kg: first.oldBest!, label: 'starting best' })
   for (const c of cycles) {
     if (c.done && c.finished && c.newBest !== null) {
       out.push({ t: Date.parse(c.finished), date: c.finished, kg: c.newBest, label: `after ${programName(c.program)}` })
@@ -169,7 +174,13 @@ function BestChart({ cycles, programName }: { cycles: Cycle[]; programName: (id:
         <polyline className="line" points={pts.map((p) => `${x(p.t)},${y(p.kg)}`).join(' ')} />
         {h && <line className="crosshair" x1={x(h.t)} x2={x(h.t)} y1={PAD.t} y2={H - PAD.b} />}
         {pts.map((p, i) => (
-          <circle key={i} className={`dot ${i === hover ? 'on' : ''}`} cx={x(p.t)} cy={y(p.kg)} r={i === hover ? 6 : 4} />
+          <circle
+            key={i}
+            className={`dot ${i === hover ? 'on' : ''}`}
+            cx={x(p.t)}
+            cy={y(p.kg)}
+            r={i === hover ? 6 : 4}
+          />
         ))}
       </svg>
       {h && (
