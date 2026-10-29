@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Rautaloki: weight training log for a few users, replacing Google Sheets.
-README.md documents the data model, the training rules and the import; read it first.
+README.md documents the data model and the training rules; read it first.
 
 - `shared/` holds the types and pure training rules, used by the UI and the tests. The rules
   reproduce the old sheets' formulas exactly, and `shared/training.test.ts` pins them to
