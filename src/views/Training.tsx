@@ -213,13 +213,18 @@ function Settings({
       className="settings"
       onSubmit={(e) => {
         e.preventDefault()
-        if (valid) onChange((c) => ({ ...c, oldBest: ob, add: ad }))
+        // The old best is fixed once set: targets and performances are all relative to it.
+        if (valid) onChange((c) => ({ ...c, oldBest: c.oldBest ?? ob, add: ad }))
       }}
     >
-      <label>
-        Old best (kg)
-        <input inputMode="decimal" value={oldBest} onChange={(e) => setOldBest(e.target.value)} />
-      </label>
+      {cycle.oldBest === null ? (
+        <label>
+          Old best (kg)
+          <input inputMode="decimal" value={oldBest} onChange={(e) => setOldBest(e.target.value)} />
+        </label>
+      ) : (
+        <p className="muted small">Old best {kg(cycle.oldBest)}, fixed for this cycle.</p>
+      )}
       <label>
         Adjust proposal (kg)
         <input inputMode="decimal" value={add} onChange={(e) => setAdd(e.target.value)} />
