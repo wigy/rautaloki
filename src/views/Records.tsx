@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { records } from '../../shared/training.ts'
 import type { Ctx } from '../App.tsx'
 import banner from '../assets/records.webp'
+import { muscleIcon } from '../icons.ts'
 import { exercise, fmtDate, kg } from '../lookup.ts'
 
 export function Records(ctx: Ctx) {
@@ -35,7 +36,10 @@ export function Records(ctx: Ctx) {
         {groups.map(([muscle, list]) => (
           <tbody key={muscle}>
             <tr className="group">
-              <th colSpan={4}>{muscle}</th>
+              <th colSpan={4}>
+                {muscleIcon(muscle) && <img className="group-icon" src={muscleIcon(muscle)} alt="" />}
+                {muscle}
+              </th>
             </tr>
             {list.map((r) => (
               <tr key={r.id} className="clickable" onClick={() => ctx.go('history', r.id)}>
