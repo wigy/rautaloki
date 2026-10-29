@@ -1,7 +1,7 @@
 // JSON file storage. Every file is rewritten whole via a temp file and rename, so a
 // crash mid-write leaves the previous version intact. Single process only.
 
-import { createHash } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import { readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { Cycle, Reference, User } from '../shared/types.ts'
@@ -17,10 +17,10 @@ export class Store {
     return JSON.parse(await readFile(join(this.dir, path), 'utf8'))
   }
 
-  private async write(path: string, data: unknown): Promise<void> {
+  private async write(path: string, data: unknown, mode = 0o644): Promise<void> {
     const file = join(this.dir, path)
     const tmp = `${file}.tmp`
-    await writeFile(tmp, JSON.stringify(data, null, 2) + '\n')
+    await writeFile(tmp, JSON.stringify(data, null, 2) + '\n', { mode })
     await rename(tmp, file)
   }
 
@@ -75,6 +75,34 @@ export class Store {
       if ((err as NodeJS.ErrnoException).code === 'ENOENT') throw new NotFound()
       throw err
     }
+  }
+
+  /** Password hashes by user id. A user missing here has no password and cannot log in. */
+  async passwords(): Promise<Record<string, string>> {
+    try {
+      return await this.read<Record<string, string>>('passwords.json')
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'ENOENT') return {}
+      throw err
+    }
+  }
+
+  async setPassword(id: string, hash: string): Promise<void> {
+    await this.user(id)
+    await this.write('passwords.json', { ...(await this.passwords()), [id]: hash }, 0o600)
+  }
+
+  /** The key sessions are signed with, created on first use. Deleting it logs everyone out. */
+  async secret(): Promise<Buffer> {
+    const file = join(this.dir, 'secret')
+    try {
+      return Buffer.from(await readFile(file, 'utf8'), 'base64url')
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err
+    }
+    const key = randomBytes(32)
+    await writeFile(file, key.toString('base64url'), { mode: 0o600, flag: 'wx' })
+    return key
   }
 
   /** Replace a user's data. `version` must match the stored one, or nothing is written. */

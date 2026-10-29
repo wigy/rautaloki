@@ -43,15 +43,17 @@ export async function getMe(): Promise<Me | null> {
   }
 }
 
-/** Log in by name. Returns null for an unknown name unless `create` is set. */
-export async function login(name: string, create = false): Promise<Me | null> {
+/** Log in, or sign up with `create`. Returns null for an unknown name unless `create` is set. */
+export async function login(name: string, password: string, create = false): Promise<Me | null> {
   const res = await fetch('/api/login', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name, create }),
+    body: JSON.stringify({ name, password, create }),
   })
   if (res.status === 404) return null
-  return (await check(res)).json()
+  // A 401 here is a wrong password, not a lost session.
+  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `HTTP ${res.status}`)
+  return res.json()
 }
 
 export async function logout(): Promise<void> {

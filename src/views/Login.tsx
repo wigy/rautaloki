@@ -5,6 +5,7 @@ import hero from '../assets/login.webp'
 
 export function Login({ onLogin }: { onLogin: (me: Me) => void }) {
   const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
   const [unknown, setUnknown] = useState<string>()
   const [error, setError] = useState<string>()
   const [busy, setBusy] = useState(false)
@@ -13,11 +14,11 @@ export function Login({ onLogin }: { onLogin: (me: Me) => void }) {
     setBusy(true)
     setError(undefined)
     try {
-      const me = await login(name, create)
+      const me = await login(name, password, create)
       if (me) onLogin(me)
       else setUnknown(name.trim())
     } catch (e) {
-      setError(String(e))
+      setError(e instanceof Error ? e.message : String(e))
     } finally {
       setBusy(false)
     }
@@ -29,7 +30,7 @@ export function Login({ onLogin }: { onLogin: (me: Me) => void }) {
         className="card login"
         onSubmit={(e) => {
           e.preventDefault()
-          if (name.trim()) submit(false)
+          if (name.trim() && password) submit(false)
         }}
       >
         <img className="banner hero" src={hero} alt="" />
@@ -47,13 +48,22 @@ export function Login({ onLogin }: { onLogin: (me: Me) => void }) {
             autoFocus
           />
         </label>
-        <button className="primary" disabled={busy || !name.trim()}>
+        <label>
+          Password
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete={unknown ? 'new-password' : 'current-password'}
+          />
+        </label>
+        <button className="primary" disabled={busy || !name.trim() || !password}>
           Log in
         </button>
         {unknown && (
           <div className="notice">
-            <p>No user named “{unknown}”.</p>
-            <button type="button" disabled={busy} onClick={() => submit(true)}>
+            <p>No user named “{unknown}”. Creating one sets the password above as theirs.</p>
+            <button type="button" disabled={busy || password.length < 8} onClick={() => submit(true)}>
               Create user {unknown}
             </button>
           </div>

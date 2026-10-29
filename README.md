@@ -32,12 +32,29 @@ Node ≥ 24 runs the TypeScript server directly (type stripping), so only the UI
 has a build step. Settings are env vars: `PORT` (8910), `HOST` (0.0.0.0),
 `RAUTALOKI_DATA` (./data).
 
-Users log in **by name only, with no password**. Names match case-insensitively, and an
-unknown name can be created as a new user from the login screen. The session is an
-HttpOnly cookie holding the user id, and each user can read and write only their own
-file. This keeps people from mixing up each other's logs, but it is not security:
-anyone who can reach the server can log in as anyone. Keep it on the LAN or behind an
-authenticating proxy.
+Users log in with a **name and password**. Names match case-insensitively, and an
+unknown name can be created as a new user from the login screen, with the password
+given there (at least 8 characters). Each user can read and write only their own file.
+The session is an HttpOnly cookie holding a token signed with `data/secret` (created on
+first start; deleting it logs everyone out), and it is also marked Secure when the
+request arrives through an HTTPS proxy (`X-Forwarded-Proto: https`). After 5 wrong
+passwords in a row a user's login is held off for a minute per attempt.
+
+Set or change a password from the shell, which also ends that user's old sessions:
+
+```bash
+node server/passwd.ts <name>    # asks for the password; RAUTALOKI_DATA as for the server
+```
+
+### Docker
+
+```bash
+docker build -t rautaloki .
+docker run -d -p 8910:8910 -v "$PWD/data:/data" rautaloki
+```
+
+The image runs as uid 1000 with the data in `/data`. Put it behind an HTTPS proxy
+before exposing it to the internet.
 
 ## Data
 
@@ -54,6 +71,8 @@ writer, so run one instance only.
 | `data/programs.json` | programs: per week a scheme and a percentage of the old best |
 | `data/weights.json` | loadable weights per equipment kind with the plates that make them |
 | `data/users/<id>.json` | one user: name and all their cycles |
+| `data/passwords.json` | scrypt password hashes by user id, never sent to the UI |
+| `data/secret` | the key session cookies are signed with |
 
 A cycle stores `scores`, one per program week: kg lifted, `"-"` for a skipped
 week, `null` for not done yet. Records, improvements and the next proposal are
