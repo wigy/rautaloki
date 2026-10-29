@@ -148,4 +148,9 @@ function validateUser(user: User, id: string): void {
     if (!isDate(c.started) || !isDate(c.finished)) fail(`${at}: dates`)
     if (typeof c.done !== 'boolean') fail(`${at}: done`)
   })
+  if (user.tempo !== undefined) {
+    const t = user.tempo
+    if (!t || typeof t !== 'object' || Array.isArray(t)) fail('tempo must be an object')
+    if (!Object.values(t).every((v) => typeof v === 'number' && v > 0)) fail('tempo values must be positive numbers')
+  }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Segment } from '../../shared/timer.ts'
+import { type Segment, TEMPO_MAX, TEMPO_MIN } from '../../shared/timer.ts'
 
 interface Props {
   segments: Segment[]
@@ -7,6 +7,9 @@ interface Props {
   icon?: string
   scheme: string
   weight: string
+  /** Factor on the seconds per repeat for this exercise, changeable before the start. */
+  tempo: number
+  onTempo: (tempo: number) => void
   onClose: () => void
 }
 
@@ -24,7 +27,7 @@ function say(text: string) {
 const STALE = 2
 
 /** Full-screen timer that runs the segments and speaks their cues. */
-export function SetTimer({ segments, title, icon, scheme, weight, onClose }: Props) {
+export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo, onClose }: Props) {
   // Timing lives in a ref so the interval reads current values; `now` only drives rendering.
   const run = useRef({ i: 0, start: 0, paused: null as number | null, fired: 0, running: false })
   const [now, setNow] = useState(() => performance.now())
@@ -94,6 +97,8 @@ export function SetTimer({ segments, title, icon, scheme, weight, onClose }: Pro
   const sets = lifts.length
   const reps = lifts[0]?.duration && lifts[0].cadence ? lifts[0].duration / lifts[0].cadence : null
   const rest = segments.find((s) => s.kind === 'rest')?.duration
+  // Steps of 0.1, rounded so repeated taps do not drift in floating point.
+  const step = (d: number) => onTempo(Math.min(TEMPO_MAX, Math.max(TEMPO_MIN, Math.round((tempo + d) * 10) / 10)))
 
   let body
   if (!r.running && r.i === 0) {
@@ -106,6 +111,17 @@ export function SetTimer({ segments, title, icon, scheme, weight, onClose }: Pro
           {reps ? `, a repeat every ${lifts[0].cadence} s` : ', each until you stop'}
           {rest ? `, ${rest / 60} min rest` : ''}
         </p>
+        {reps && (
+          <div className="adjust">
+            <button onClick={() => step(0.1)} disabled={tempo >= TEMPO_MAX} aria-label="Slower">
+              −
+            </button>
+            <span>Tempo {Math.round(100 / tempo)} %</span>
+            <button onClick={() => step(-0.1)} disabled={tempo <= TEMPO_MIN} aria-label="Faster">
+              +
+            </button>
+          </div>
+        )}
         <button className="primary timer-main" onClick={start}>
           Start
         </button>

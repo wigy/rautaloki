@@ -70,7 +70,7 @@ writer, so run one instance only.
 | `data/catalog.json` | exercises: main/other muscles, equipment, level, reference URL |
 | `data/programs.json` | programs: per week a scheme and a percentage of the old best |
 | `data/weights.json` | loadable weights per equipment kind with the plates that make them |
-| `data/users/<id>.json` | one user: name and all their cycles |
+| `data/users/<id>.json` | one user: name, all their cycles and timer tempo per exercise |
 | `data/passwords.json` | scrypt password hashes by user id, never sent to the UI |
 | `data/secret` | the key session cookies are signed with |
 
@@ -104,3 +104,5 @@ The ▶ Timer button on a training card runs the week's sets and speaks the call
 set, and the next round announced 6 s before a rest ends. Rest is 1 min in 10-set work,
 3 min for singles and MAX sets, otherwise 2 min. MAX and TEST sets run until *Set done*
 is tapped. The screen is kept on while the timer is open.
+The tempo is set per exercise with − / + on the timer's start screen, in steps of 10 %
+of the seconds per repeat; it is kept in the user's file as `tempo`, by exercise id.

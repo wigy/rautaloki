@@ -56,6 +56,14 @@ describe('timer', () => {
     expect(shape('2 x 6 fast')).toEqual([18, 120])
   })
 
+  it('scales the repeats by the tempo', () => {
+    const lift = timerPlan('3 x 4', 0.5)!.find((s) => s.kind === 'lift')!
+    expect(lift).toMatchObject({ duration: 10, cadence: 2.5 })
+    expect(lift.cues.map((c) => c.at)).toEqual([0, 2.5, 5, 7.5])
+    expect(timerPlan('3 x 4', 0.5)!.find((s) => s.kind === 'rest')!.duration).toBe(120)
+    expect(timerPlan('2 x 6 fast', 0.7)!.find((s) => s.kind === 'lift')!.cadence).toBe(2.1)
+  })
+
   it('leaves MAX sets open', () => {
     const p = timerPlan('2 x MAX')!
     expect(p.map((s) => [s.kind, s.duration])).toEqual([

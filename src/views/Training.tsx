@@ -40,7 +40,8 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const [value, setValue] = useState(suggested?.toString() ?? '')
   const [timing, setTiming] = useState(false)
   const [howTo, setHowTo] = useState(false)
-  const segments = useMemo(() => (p ? timerPlan(p.scheme) : null), [p?.scheme])
+  const tempo = ctx.user.tempo?.[cycle.exercise] ?? 1
+  const segments = useMemo(() => (p ? timerPlan(p.scheme, tempo) : null), [p?.scheme, tempo])
   useEffect(() => setValue(suggested?.toString() ?? ''), [suggested, p?.week])
 
   const change = (fn: (c: Cycle) => Cycle) =>
@@ -99,6 +100,13 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
               icon={icon}
               scheme={p.scheme}
               weight={[kg(p.load?.total ?? p.proposal), p.plates].filter(Boolean).join(' · ')}
+              tempo={tempo}
+              onTempo={(t) =>
+                ctx.update((u) => {
+                  const { [cycle.exercise]: _, ...rest } = u.tempo ?? {}
+                  return { ...u, tempo: t === 1 ? rest : { ...rest, [cycle.exercise]: t } }
+                })
+              }
               onClose={() => setTiming(false)}
             />
           )}

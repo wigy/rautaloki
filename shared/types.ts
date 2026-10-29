@@ -63,6 +63,8 @@ export interface User {
   id: string
   name: string
   cycles: Cycle[]
+  /** Timer tempo by exercise id, a factor on the seconds per repeat: 0.5 is twice as fast. Missing is 1. */
+  tempo?: Record<string, number>
 }
 
 export interface Reference {

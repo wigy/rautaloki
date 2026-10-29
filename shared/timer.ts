@@ -71,11 +71,18 @@ export function liftCues(reps: number | null, every: number): Cue[] {
   }))
 }
 
-/** The whole timed session for a scheme, or null when the scheme is not one to time. */
-export function timerPlan(scheme: string): Segment[] | null {
+/** Range of the per-exercise tempo factor. */
+export const TEMPO_MIN = 0.3
+export const TEMPO_MAX = 2
+
+/**
+ * The whole timed session for a scheme, or null when the scheme is not one to time.
+ * `tempo` scales the seconds per repeat, so 0.5 runs the repeats twice as fast.
+ */
+export function timerPlan(scheme: string, tempo = 1): Segment[] | null {
   const sc = parseScheme(scheme)
   if (!sc) return null
-  const every = cadence(sc)
+  const every = Math.round(cadence(sc) * tempo * 100) / 100
   const rest = restSeconds(sc)
   const { sets } = sc
   const out: Segment[] = [
