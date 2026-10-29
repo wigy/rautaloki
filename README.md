@@ -5,6 +5,19 @@ Weight training log that replaces the "Weight Training <name>" Google Sheets
 weekly schemes (e.g. *Original*: 4 × "10 x 10", 2 × "2 x MAX", 3 × "4 x 10", TEST)
 run from the exercise's **old best**, ending in a test week that sets the new best.
 
+<p>
+  <img src="docs/screenshots/training.webp" width="260" alt="Training: this week's weight and plates per cycle">
+  <img src="docs/screenshots/timer.webp" width="260" alt="Spoken set timer during a lift">
+  <img src="docs/screenshots/how-to.webp" width="260" alt="Form instructions on the training card">
+</p>
+<p>
+  <img src="docs/screenshots/new-cycle.webp" width="260" alt="New cycle: picking the muscle group">
+  <img src="docs/screenshots/history.webp" width="260" alt="History of one exercise with its best over time">
+  <img src="docs/screenshots/records.webp" width="260" alt="Records by muscle group">
+</p>
+
+Screenshots show the made-up example user from `fixtures/`.
+
 ## Running
 
 ```bash
