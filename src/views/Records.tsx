@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { records } from '../../shared/training.ts'
 import type { Ctx } from '../App.tsx'
+import banner from '../assets/records.webp'
 import { exercise, fmtDate, kg } from '../lookup.ts'
 
 export function Records(ctx: Ctx) {
@@ -20,6 +21,7 @@ export function Records(ctx: Ctx) {
 
   return (
     <section className="card">
+      <img className="banner" src={banner} alt="" style={{ objectPosition: '50% 25%' }} />
       <h2>Records</h2>
       <table className="records">
         <thead>

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { newCycle, records, today } from '../../shared/training.ts'
 import type { Exercise } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
+import banner from '../assets/new.webp'
 import { kg } from '../lookup.ts'
 
 export function NewCycle(ctx: Ctx) {
@@ -39,6 +40,7 @@ export function NewCycle(ctx: Ctx) {
         ctx.go('training')
       }}
     >
+      <img className="banner" src={banner} alt="" style={{ objectPosition: '70% 40%' }} />
       <h2>New cycle</h2>
       <label>
         Exercise

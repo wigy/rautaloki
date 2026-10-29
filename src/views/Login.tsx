@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Me } from '../../shared/types.ts'
 import { login } from '../api.ts'
+import hero from '../assets/login.webp'
 
 export function Login({ onLogin }: { onLogin: (me: Me) => void }) {
   const [name, setName] = useState('')
@@ -31,6 +32,7 @@ export function Login({ onLogin }: { onLogin: (me: Me) => void }) {
           if (name.trim()) submit(false)
         }}
       >
+        <img className="banner hero" src={hero} alt="" />
         <h1>Rautaloki</h1>
         <label>
           Your name

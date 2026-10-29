@@ -108,6 +108,7 @@ export function App() {
   return (
     <>
       <header>
+        <img className="logo" src="/favicon.png" alt="" />
         <h1>Rautaloki</h1>
         <span className="who">{me.name}</span>
         <span className={`saving ${saving ? 'on' : ''}`} aria-live="polite">

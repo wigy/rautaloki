@@ -73,6 +73,36 @@ h2 a {
   text-decoration: none;
 }
 
+/* Decorative illustrations */
+.banner {
+  display: block;
+  width: calc(100% + 28px);
+  margin: -14px -14px 14px;
+  aspect-ratio: 16 / 6;
+  object-fit: cover;
+  border-radius: 11px 11px 0 0;
+  background: #14213d;
+}
+
+.banner.hero {
+  aspect-ratio: 16 / 9;
+}
+
+.empty-art {
+  width: min(240px, 60vw);
+  aspect-ratio: 1;
+  border-radius: 16px;
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  margin-right: -4px;
+}
+
 .who {
   font-weight: 600;
   color: var(--text-2);
@@ -80,7 +110,8 @@ h2 a {
 
 .login {
   max-width: 360px;
-  margin: 15vh auto 0;
+  margin: 10vh auto 0;
+  overflow: hidden;
 }
 
 .login button.primary {

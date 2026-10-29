@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { currentWeek, finishCycle, plan, recordScore, today, undoScore } from '../../shared/training.ts'
 import type { Cycle, Program } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
+import empty from '../assets/empty.webp'
 import { exercise, fmtDate, kg, program } from '../lookup.ts'
 
 export function Training(ctx: Ctx) {
@@ -9,6 +10,7 @@ export function Training(ctx: Ctx) {
   if (!active.length) {
     return (
       <div className="empty">
+        <img className="empty-art" src={empty} alt="" />
         <p>No cycle in progress.</p>
         <button className="primary" onClick={() => ctx.go('new')}>
           Start a new cycle

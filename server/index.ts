@@ -128,8 +128,12 @@ async function file(res: ServerResponse, path: string) {
   let file = normalize(join(dist, path))
   if (!file.startsWith(dist)) throw new NotFound()
   const info = await stat(file).catch(() => null)
-  // Unknown paths get the app shell, so a reload on any view still works.
-  if (!info?.isFile()) file = join(dist, 'index.html')
+  if (!info?.isFile()) {
+    // A missing file (has an extension) is a 404; any other path gets the app shell,
+    // so a reload on any view still works.
+    if (extname(path)) throw new NotFound()
+    file = join(dist, 'index.html')
+  }
   const cache = file.includes(`${dist}/assets/`) ? 'public, max-age=31536000, immutable' : 'no-cache'
   res.writeHead(200, { 'content-type': types[extname(file)] ?? 'application/octet-stream', 'cache-control': cache })
   createReadStream(file).on('error', () => res.destroy()).pipe(res)
