@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   bestPerformance,
   currentWeek,
+  finishCycle,
   newCycle,
   plan,
   recordScore,
@@ -101,6 +102,11 @@ describe('recording', () => {
     for (let w = 0; w < 4; w++) c = recordScore(c, p, '-', '2026-10-01')
     expect(recordScore(c, p, '-', '2026-10-29').newBest).toBe(50)
     expect(recordScore(c, p, 45, '2026-10-29').newBest).toBe(50)
+  })
+
+  it('finishing a fully recorded but open cycle takes the test result', () => {
+    const c = { ...newCycle('deadlift', prog('5-x-5'), 81, '2021-11-09'), scores: [57, 57, 57, 57, 57, 57] }
+    expect(finishCycle(c, prog('5-x-5'), '2026-10-29')).toMatchObject({ done: true, newBest: 81, finished: '2026-10-29' })
   })
 
   it('undo reopens a closed cycle', () => {

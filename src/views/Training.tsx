@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { currentWeek, plan, recordScore, today, undoScore } from '../../shared/training.ts'
+import { currentWeek, finishCycle, plan, recordScore, today, undoScore } from '../../shared/training.ts'
 import type { Cycle, Program } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import { exercise, fmtDate, kg, program } from '../lookup.ts'
@@ -106,7 +106,14 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
             </button>
           </form>
         </div>
-      ) : null}
+      ) : (
+        <div className="plan">
+          <p className="muted">All weeks are recorded, but the cycle was never closed.</p>
+          <button className="primary" onClick={() => change((c) => finishCycle(c, prog, today()))}>
+            Finish cycle
+          </button>
+        </div>
+      )}
 
       <div className="card-actions">
         {hasScores && (

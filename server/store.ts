@@ -35,8 +35,36 @@ export class Store {
       this.read<Reference['programs']>('programs.json'),
       this.read<Reference['weights']>('weights.json'),
     ])
-    const users = await Promise.all((await this.userIds()).map((id) => this.user(id)))
-    return { catalog, programs, weights, users: users.map(({ id, name }) => ({ id, name })) }
+    return { catalog, programs, weights }
+  }
+
+  /** The user with this name, compared case- and whitespace-insensitively. */
+  async findByName(name: string): Promise<User | null> {
+    const key = normalizeName(name)
+    for (const id of await this.userIds()) {
+      const user = await this.user(id)
+      if (normalizeName(user.name) === key) return user
+    }
+    return null
+  }
+
+  async createUser(name: string): Promise<User> {
+    const clean = name.trim().replace(/\s+/g, ' ')
+    if (!clean || clean.length > 40) throw new Invalid('name must be 1-40 characters')
+    if (await this.findByName(clean)) throw new Conflict()
+    const base =
+      clean
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || 'user'
+    const ids = new Set(await this.userIds())
+    let id = base
+    for (let n = 2; ids.has(id); n++) id = `${base}-${n}`
+    const user: User = { id, name: clean, cycles: [] }
+    await this.write(`users/${id}.json`, user)
+    return user
   }
 
   async user(id: string): Promise<User> {
@@ -57,6 +85,10 @@ export class Store {
     await this.write(`users/${id}.json`, user)
     return etag(user)
   }
+}
+
+export function normalizeName(name: string): string {
+  return name.trim().replace(/\s+/g, ' ').toLocaleLowerCase()
 }
 
 export function etag(data: unknown): string {

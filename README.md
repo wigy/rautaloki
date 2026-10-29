@@ -18,8 +18,14 @@ npm test        # rule tests on fixtures/, plus a consistency check of data/ if 
 
 Node ≥ 24 runs the TypeScript server directly (type stripping), so only the UI
 has a build step. Settings are env vars: `PORT` (8910), `HOST` (0.0.0.0),
-`RAUTALOKI_DATA` (./data). There is no login: keep it on the LAN or put it
-behind an authenticating proxy.
+`RAUTALOKI_DATA` (./data).
+
+Users log in **by name only, with no password**. Names match case-insensitively, and an
+unknown name can be created as a new user from the login screen. The session is an
+HttpOnly cookie holding the user id, and each user can read and write only their own
+file. This keeps people from mixing up each other's logs, but it is not security:
+anyone who can reach the server can log in as anyone. Keep it on the LAN or behind an
+authenticating proxy.
 
 ## Data
 
@@ -42,7 +48,8 @@ week, `null` for not done yet. Records, improvements and the next proposal are
 derived from these, never stored. Saves carry the file's ETag (`If-Match`), so a
 stale tab gets a 412 instead of overwriting another device's entry.
 
-To add a user, copy a file in `data/users/` with a new id, name and `"cycles": []`.
+New users are created from the login screen as `data/users/<id>.json`, with the id
+derived from the name.
 
 ## Rules (from the sheets' formulas)
 

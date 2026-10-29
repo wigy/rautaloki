@@ -120,6 +120,14 @@ export function recordScore(cycle: Cycle, program: Program, score: number | '-',
   return next
 }
 
+/** Close a cycle whose weeks are all recorded but which was never closed (old sheet data). */
+export function finishCycle(cycle: Cycle, program: Program, today: string): Cycle {
+  const t = program.weeks.findIndex((w) => w.scheme.toUpperCase() === 'TEST')
+  const test = cycle.scores[t]
+  const newBest = typeof test === 'number' ? Math.max(cycle.oldBest ?? 0, test) : cycle.oldBest
+  return { ...cycle, done: true, finished: cycle.finished ?? today, newBest }
+}
+
 /** Clear the most recent score, reopening the cycle if it had closed. */
 export function undoScore(cycle: Cycle): Cycle {
   const week = currentWeek(cycle)

@@ -1,9 +1,11 @@
-import type { Reference, User } from '../shared/types.ts'
+import type { Me, Reference, User } from '../shared/types.ts'
 
 export class StaleError extends Error {}
+export class LoggedOutError extends Error {}
 
 async function check(res: Response): Promise<Response> {
   if (res.status === 412) throw new StaleError('Data was changed on another device.')
+  if (res.status === 401) throw new LoggedOutError('Not logged in.')
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
     throw new Error(body.error ?? `HTTP ${res.status}`)
@@ -30,4 +32,28 @@ export async function putUser(user: User, version: string): Promise<string> {
     }),
   )
   return res.headers.get('etag') ?? ''
+}
+
+export async function getMe(): Promise<Me | null> {
+  try {
+    return await (await check(await fetch('/api/me'))).json()
+  } catch (e) {
+    if (e instanceof LoggedOutError) return null
+    throw e
+  }
+}
+
+/** Log in by name. Returns null for an unknown name unless `create` is set. */
+export async function login(name: string, create = false): Promise<Me | null> {
+  const res = await fetch('/api/login', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name, create }),
+  })
+  if (res.status === 404) return null
+  return (await check(res)).json()
+}
+
+export async function logout(): Promise<void> {
+  await check(await fetch('/api/logout', { method: 'POST' }))
 }

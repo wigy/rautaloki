@@ -73,6 +73,26 @@ h2 a {
   text-decoration: none;
 }
 
+.who {
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.login {
+  max-width: 360px;
+  margin: 15vh auto 0;
+}
+
+.login button.primary {
+  width: 100%;
+}
+
+.notice {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
+}
+
 .saving {
   font-size: 0.8rem;
   color: var(--muted);

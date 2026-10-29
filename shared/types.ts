@@ -69,5 +69,10 @@ export interface Reference {
   catalog: Exercise[]
   programs: Program[]
   weights: Weights
-  users: { id: string; name: string }[]
+}
+
+/** The logged-in user, as the session reports it. */
+export interface Me {
+  id: string
+  name: string
 }
