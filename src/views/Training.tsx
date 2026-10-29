@@ -4,6 +4,7 @@ import { currentWeek, finishCycle, plan, recordScore, today, undoScore } from '.
 import type { Cycle, Program } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import empty from '../assets/empty.webp'
+import { GENERAL, HOWTO } from '../howto.ts'
 import { exerciseIcon } from '../icons.ts'
 import { exercise, fmtDate, kg, program } from '../lookup.ts'
 import { SetTimer } from './SetTimer.tsx'
@@ -39,6 +40,7 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const [value, setValue] = useState(suggested?.toString() ?? '')
   const [editing, setEditing] = useState(false)
   const [timing, setTiming] = useState(false)
+  const [howTo, setHowTo] = useState(false)
   const segments = useMemo(() => (p ? timerPlan(p.scheme) : null), [p?.scheme])
   useEffect(() => setValue(suggested?.toString() ?? ''), [suggested, p?.week])
 
@@ -147,6 +149,9 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
             Undo last
           </button>
         )}
+        <button className="link" onClick={() => setHowTo(!howTo)}>
+          {howTo ? 'Close how to' : 'How to'}
+        </button>
         <button className="link" onClick={() => setEditing(!editing)}>
           {editing ? 'Close settings' : 'Settings'}
         </button>
@@ -154,6 +159,8 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
           History
         </button>
       </div>
+
+      {howTo && <HowToPanel id={cycle.exercise} url={ex.url} />}
 
       {editing && (
         <Settings
@@ -170,6 +177,41 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
         />
       )}
     </section>
+  )
+}
+
+function HowToPanel({ id, url }: { id: string; url: string | null }) {
+  const h = HOWTO[id]
+  return (
+    <div className="settings howto">
+      {h && (
+        <>
+          <h3>Steps</h3>
+          <ol>
+            {h.steps.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ol>
+          <h3>Watch out</h3>
+          <ul>
+            {h.watch.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      <h3>Every set</h3>
+      <ul>
+        {GENERAL.map((t) => (
+          <li key={t}>{t}</li>
+        ))}
+      </ul>
+      {url && (
+        <a href={url} target="_blank" rel="noreferrer">
+          Pictures and video
+        </a>
+      )}
+    </div>
   )
 }
 
