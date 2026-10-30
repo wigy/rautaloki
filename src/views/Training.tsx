@@ -140,6 +140,14 @@ function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: b
                   return { ...u, tempo: t === 1 ? rest : { ...rest, [cycle.exercise]: t } }
                 })
               }
+              onDone={
+                p.proposal !== null && valid
+                  ? () => {
+                      setTiming(false)
+                      save(n)
+                    }
+                  : undefined
+              }
               onClose={() => setTiming(false)}
             />
           )}

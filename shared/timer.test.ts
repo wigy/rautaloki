@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { liftCues, parseScheme, timerPlan } from './timer.ts'
+import { liftCues, parseScheme, stepTempo, tempoPercent, timerPlan } from './timer.ts'
 
 // Cue offsets as in time2xercise's data/fitness.js (sounds of the WL-*-DO codes).
 const t2x = (cues: Record<number, string>) => Object.entries(cues).map(([at, say]) => ({ at: Number(at), say }))
@@ -62,6 +62,14 @@ describe('timer', () => {
     expect(lift.cues.map((c) => c.at)).toEqual([0, 2.5, 5, 7.5])
     expect(timerPlan('3 x 4', 0.5)!.find((s) => s.kind === 'rest')!.duration).toBe(120)
     expect(timerPlan('2 x 6 fast', 0.7)!.find((s) => s.kind === 'lift')!.cadence).toBe(2.1)
+  })
+
+  it('steps the tempo by 25 % of speed', () => {
+    expect(tempoPercent(stepTempo(1, 1))).toBe(125)
+    expect(tempoPercent(stepTempo(1, -1))).toBe(75)
+    expect(tempoPercent(stepTempo(0.9, 1))).toBe(125) // 111 % snaps to the grid first
+    expect(stepTempo(2, -1)).toBe(2) // 50 % is the slowest
+    expect(tempoPercent(stepTempo(1 / 3.25, 1))).toBe(325) // 350 % would be under TEMPO_MIN
   })
 
   it('leaves MAX sets open', () => {

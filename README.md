@@ -112,5 +112,8 @@ The ▶ Timer button on a training card runs the week's sets and speaks the call
 set, and the next round announced 6 s before a rest ends. Rest is 1 min in 10-set work,
 3 min for singles and MAX sets, otherwise 2 min. MAX and TEST sets run until *Set done*
 is tapped. The screen is kept on while the timer is open.
-The tempo is set per exercise with − / + on the timer's start screen, in steps of 10 %
-of the seconds per repeat; it is kept in the user's file as `tempo`, by exercise id.
+The tempo is set per exercise with − / + on the timer, before the start or while it runs,
+in steps of 25 % of normal speed (50 % to 325 %); a change mid-set keeps the lifter on the
+same repeat. It is kept in the user's file as `tempo`, by exercise id. With a keyboard,
+p or space pauses and + / − change the tempo. *Done* on the final screen saves the
+weight in the entry field, like Save.

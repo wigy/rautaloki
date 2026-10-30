@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { type Segment, TEMPO_MAX, TEMPO_MIN } from '../../shared/timer.ts'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { type Segment, stepTempo, tempoPercent } from '../../shared/timer.ts'
 
 interface Props {
   segments: Segment[]
@@ -7,9 +7,11 @@ interface Props {
   icon?: string
   scheme: string
   weight: string
-  /** Factor on the seconds per repeat for this exercise, changeable before the start. */
+  /** Factor on the seconds per repeat for this exercise, changeable also while running. */
   tempo: number
   onTempo: (tempo: number) => void
+  /** Records the result from the done screen, like Save; without it the screen only closes. */
+  onDone?: () => void
   onClose: () => void
 }
 
@@ -27,7 +29,7 @@ function say(text: string) {
 const STALE = 2
 
 /** Full-screen timer that runs the segments and speaks their cues. */
-export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo, onClose }: Props) {
+export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo, onDone, onClose }: Props) {
   // Timing lives in a ref so the interval reads current values; `now` only drives rendering.
   const run = useRef({ i: 0, start: 0, paused: null as number | null, fired: 0, running: false })
   const [now, setNow] = useState(() => performance.now())
@@ -44,6 +46,17 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
       say('done')
     }
   }
+
+  // A tempo change mid-set rescales the time already lifted, so the lifter stays on the same repeat.
+  const shown = useRef(segments)
+  useLayoutEffect(() => {
+    const was = shown.current[r.i]
+    const is = segments[r.i]
+    shown.current = segments
+    if (was?.kind !== 'lift' || !was.cadence || !is?.cadence || was.cadence === is.cadence) return
+    const t = r.paused ?? performance.now()
+    r.start = t - (t - r.start) * (is.cadence / was.cadence)
+  }, [segments])
 
   useEffect(() => {
     const tick = () => {
@@ -95,10 +108,42 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
 
   const lifts = segments.filter((s) => s.kind === 'lift')
   const sets = lifts.length
-  const reps = lifts[0]?.duration && lifts[0].cadence ? lifts[0].duration / lifts[0].cadence : null
+  const reps = lifts[0]?.duration && lifts[0].cadence ? Math.round(lifts[0].duration / lifts[0].cadence) : null
   const rest = segments.find((s) => s.kind === 'rest')?.duration
-  // Steps of 0.1, rounded so repeated taps do not drift in floating point.
-  const step = (d: number) => onTempo(Math.min(TEMPO_MAX, Math.max(TEMPO_MIN, Math.round((tempo + d) * 10) / 10)))
+  const faster = stepTempo(tempo, 1)
+  const slower = stepTempo(tempo, -1)
+  const running = r.running && !!seg
+
+  // Keys for a phone on a stand with a keyboard: p or space pauses, + and - change the tempo.
+  const keys = useRef((_: KeyboardEvent) => {})
+  keys.current = (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (e.key === 'p' || e.key === ' ') {
+      e.preventDefault()
+      if (running) togglePause()
+    } else if (reps && (e.key === '+' || e.key === '=')) {
+      onTempo(faster)
+    } else if (reps && e.key === '-') {
+      onTempo(slower)
+    }
+  }
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => keys.current(e)
+    window.addEventListener('keydown', on)
+    return () => window.removeEventListener('keydown', on)
+  }, [])
+
+  const tempoControl = reps && (
+    <div className="adjust">
+      <button onClick={() => onTempo(slower)} disabled={slower === tempo} aria-label="Slower">
+        −
+      </button>
+      <span>Tempo {tempoPercent(tempo)} %</span>
+      <button onClick={() => onTempo(faster)} disabled={faster === tempo} aria-label="Faster">
+        +
+      </button>
+    </div>
+  )
 
   let body
   if (!r.running && r.i === 0) {
@@ -111,17 +156,7 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
           {reps ? `, a repeat every ${lifts[0].cadence} s` : ', each until you stop'}
           {rest ? `, ${rest / 60} min rest` : ''}
         </p>
-        {reps && (
-          <div className="adjust">
-            <button onClick={() => step(0.1)} disabled={tempo >= TEMPO_MAX} aria-label="Slower">
-              −
-            </button>
-            <span>Tempo {Math.round(100 / tempo)} %</span>
-            <button onClick={() => step(-0.1)} disabled={tempo <= TEMPO_MIN} aria-label="Faster">
-              +
-            </button>
-          </div>
-        )}
+        {tempoControl}
         <button className="primary timer-main" onClick={start}>
           Start
         </button>
@@ -132,8 +167,8 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
       <>
         <div className="timer-phase">Done</div>
         <div className="timer-big">✓</div>
-        <button className="primary timer-main" onClick={onClose}>
-          Close
+        <button className="primary timer-main" onClick={onDone ?? onClose}>
+          {onDone ? 'Done' : 'Close'}
         </button>
       </>
     )
@@ -170,6 +205,7 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
           {open && <button onClick={togglePause}>{r.paused === null ? 'Pause' : 'Resume'}</button>}
           <button onClick={next}>{seg.kind === 'lift' ? 'End set' : 'Skip'}</button>
         </div>
+        {tempoControl}
       </>
     )
   }

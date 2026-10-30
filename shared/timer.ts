@@ -75,6 +75,21 @@ export function liftCues(reps: number | null, every: number): Cue[] {
 export const TEMPO_MIN = 0.3
 export const TEMPO_MAX = 2
 
+/** Tempo as the percentage of normal speed shown to the lifter: factor 0.8 is 125 %. */
+export function tempoPercent(tempo: number): number {
+  return Math.round(100 / tempo)
+}
+
+/**
+ * The tempo one step faster (+1) or slower (-1): 25 percentage points of speed, snapped to
+ * the 25 % grid, within TEMPO_MIN..TEMPO_MAX. Returns the same tempo when at the limit.
+ */
+export function stepTempo(tempo: number, dir: 1 | -1): number {
+  const pct = Math.round(100 / tempo / 25) * 25 + dir * 25
+  const next = 100 / pct
+  return pct <= 0 || next < TEMPO_MIN || next > TEMPO_MAX ? tempo : next
+}
+
 /**
  * The whole timed session for a scheme, or null when the scheme is not one to time.
  * `tempo` scales the seconds per repeat, so 0.5 runs the repeats twice as fast.
