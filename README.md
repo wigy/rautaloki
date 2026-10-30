@@ -116,4 +116,4 @@ The tempo is set per exercise with − / + on the timer, before the start or whi
 in steps of 25 % of normal speed (50 % to 325 %); a change mid-set keeps the lifter on the
 same repeat. It is kept in the user's file as `tempo`, by exercise id. With a keyboard,
 p or space pauses and + / − change the tempo. *Done* on the final screen saves the
-weight in the entry field, like Save.
+weight in the entry field, like the card's Done button.

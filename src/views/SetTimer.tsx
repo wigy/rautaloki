@@ -10,7 +10,7 @@ interface Props {
   /** Factor on the seconds per repeat for this exercise, changeable also while running. */
   tempo: number
   onTempo: (tempo: number) => void
-  /** Records the result from the done screen, like Save; without it the screen only closes. */
+  /** Records the result from the done screen, like the card's Done; without it the screen only closes. */
   onDone?: () => void
   onClose: () => void
 }

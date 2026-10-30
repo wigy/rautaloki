@@ -188,7 +188,7 @@ function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: b
               aria-label={`Kg lifted, week ${week + 1}`}
             />
             <button className="primary" disabled={!valid}>
-              {p.isTest ? 'Save test' : 'Save'}
+              {p.isTest ? 'Save test' : 'Done'}
             </button>
             <button type="button" onClick={() => save('-')}>
               Skip
