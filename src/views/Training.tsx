@@ -56,7 +56,7 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const week = currentWeek(cycle)
   const hasScores = cycle.scores.some((s) => s !== null)
   // Quarter-kilo steps, rounded so repeated taps do not drift in floating point.
-  const adjust = (step: number) => change((c) => ({ ...c, add: Math.round((c.add + step) * 4) / 4 }))
+  const adjust = (step: number) => change((c) => ({ ...c, add: Math.round((c.add + step) * 2) / 2 }))
   const end = () => {
     if (confirm(`End ${ex.name} now? The old best is kept.`))
       change((c) => ({ ...c, done: true, finished: today(), newBest: c.oldBest }))
@@ -120,14 +120,14 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
                 Plan {kg(p.target)} · old best {kg(cycle.oldBest)}
               </div>
               <div className="adjust">
-                <button type="button" onClick={() => adjust(-0.25)} aria-label="Lower the proposal by 0.25 kg">
+                <button type="button" onClick={() => adjust(-0.5)} aria-label="Lower the proposal by 0.5 kg">
                   −
                 </button>
                 <span>
                   Adjust {cycle.add > 0 ? '+' : ''}
                   {cycle.add} kg
                 </span>
-                <button type="button" onClick={() => adjust(0.25)} aria-label="Raise the proposal by 0.25 kg">
+                <button type="button" onClick={() => adjust(0.5)} aria-label="Raise the proposal by 0.5 kg">
                   +
                 </button>
               </div>
