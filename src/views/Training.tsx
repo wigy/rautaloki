@@ -7,6 +7,7 @@ import empty from '../assets/empty.webp'
 import { GENERAL, HOWTO } from '../howto.ts'
 import { exerciseIcon } from '../icons.ts'
 import { exercise, fmtDate, kg, program } from '../lookup.ts'
+import { type ConfirmRequest, ConfirmDialog } from './ConfirmDialog.tsx'
 import { SetTimer } from './SetTimer.tsx'
 
 export function Training(ctx: Ctx) {
@@ -40,6 +41,7 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const [value, setValue] = useState(suggested?.toString() ?? '')
   const [timing, setTiming] = useState(false)
   const [howTo, setHowTo] = useState(false)
+  const [ask, setAsk] = useState<ConfirmRequest | null>(null)
   const tempo = ctx.user.tempo?.[cycle.exercise] ?? 1
   const segments = useMemo(() => (p ? timerPlan(p.scheme, tempo) : null), [p?.scheme, tempo])
   useEffect(() => setValue(suggested?.toString() ?? ''), [suggested, p?.week])
@@ -55,16 +57,26 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const valid = value.trim() !== '' && Number.isFinite(n) && n >= 0
   const week = currentWeek(cycle)
   const hasScores = cycle.scores.some((s) => s !== null)
-  // Quarter-kilo steps, rounded so repeated taps do not drift in floating point.
+  // Half-kilo steps, rounded so repeated taps do not drift in floating point.
   const adjust = (step: number) => change((c) => ({ ...c, add: Math.round((c.add + step) * 2) / 2 }))
-  const end = () => {
-    if (confirm(`End ${ex.name} now? The old best is kept.`))
-      change((c) => ({ ...c, done: true, finished: today(), newBest: c.oldBest }))
-  }
-  const remove = () => {
-    if (confirm(`Delete this ${ex.name} cycle and its scores?`))
-      ctx.update((u) => ({ ...u, cycles: u.cycles.filter((c) => c.id !== cycle.id) }))
-  }
+  const end = () =>
+    setAsk({
+      title: `End ${ex.name}?`,
+      message: 'The cycle ends now. The old best is kept as it is.',
+      action: 'End cycle',
+      tone: 'warn',
+      icon,
+      onConfirm: () => change((c) => ({ ...c, done: true, finished: today(), newBest: c.oldBest })),
+    })
+  const remove = () =>
+    setAsk({
+      title: `Delete ${ex.name}?`,
+      message: 'This cycle and all its scores are removed for good.',
+      action: 'Delete',
+      tone: 'danger',
+      icon,
+      onConfirm: () => ctx.update((u) => ({ ...u, cycles: u.cycles.filter((c) => c.id !== cycle.id) })),
+    })
 
   return (
     <section className="card">
@@ -187,6 +199,7 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
 
       {howTo && <HowToPanel id={cycle.exercise} />}
 
+      <ConfirmDialog request={ask} onClose={() => setAsk(null)} />
     </section>
   )
 }

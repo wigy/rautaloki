@@ -756,3 +756,73 @@ tr.clickable:hover td {
 .card-actions button.danger {
   color: var(--danger);
 }
+
+/* Confirm dialog */
+.confirm {
+  width: min(360px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.25);
+}
+
+.confirm::backdrop {
+  background: rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.confirm[open] {
+  animation: confirm-in 0.15s ease-out;
+}
+
+@keyframes confirm-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+
+.confirm-body {
+  padding: 20px 20px 16px;
+  text-align: center;
+}
+
+.confirm-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+}
+
+.confirm h3 {
+  margin: 8px 0 6px;
+  font-size: 1.15rem;
+}
+
+.confirm p {
+  margin: 0 0 20px;
+  color: var(--text-2);
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* button.danger would colour the label red as well; surface keeps it readable in both themes. */
+button.confirm-go {
+  font-weight: 600;
+  color: var(--surface);
+}
+
+.confirm-go.warn {
+  background: var(--test);
+  border-color: var(--test);
+}
+
+.confirm-go.danger {
+  background: var(--danger);
+  border-color: var(--danger);
+}
