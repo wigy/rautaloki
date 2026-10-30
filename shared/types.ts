@@ -52,6 +52,8 @@ export interface Cycle {
   oldBest: number | null
   /** One entry per program week. */
   scores: Score[]
+  /** Date (YYYY-MM-DD) each week's score was entered, parallel to scores. Missing in older data. */
+  scored?: (string | null)[]
   /** Manual kg adjustment added to the proposed weight. */
   add: number
   done: boolean

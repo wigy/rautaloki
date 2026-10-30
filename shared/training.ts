@@ -103,6 +103,26 @@ export function plan(cycle: Cycle, program: Program, exercise: Exercise, weights
 }
 
 /**
+ * The manual adjustment that moves the shown load one loadable weight up (+1) or down (-1),
+ * or null when there is none that way. A plain 0.5 kg step can land between two loadable
+ * weights, or below the empty bar, and then changes nothing on screen.
+ */
+export function stepAdjust(cycle: Cycle, program: Program, kind: WeightKind, dir: 1 | -1): number | null {
+  const week = currentWeek(cycle)
+  const t = week < 0 ? null : target(cycle, program, week)
+  const kg = proposal(cycle, program)
+  if (t === null || kg === null) return null
+  const totals = kind.loads.map((l) => l.total)
+  if (!totals.length) return roundHalf(cycle.add + dir * 0.5)
+  const shown = loadFor(kind, kg)?.total ?? kg
+  const way = totals.filter((x) => (dir > 0 ? x > shown : x < shown))
+  if (!way.length) return null
+  const next = dir > 0 ? Math.min(...way) : Math.max(...way)
+  // proposal() rounds t * best + add, so an add of next - round(t * best) lands exactly on next.
+  return roundHalf(next - roundHalf(t * bestPerformance(cycle, program)))
+}
+
+/**
  * Record a week's result. A score on the test week, or the last week, closes the
  * cycle; the new best is the old one unless the test beat it.
  */
@@ -110,7 +130,8 @@ export function recordScore(cycle: Cycle, program: Program, score: number | '-',
   const week = currentWeek(cycle)
   if (week < 0) throw new Error('cycle has no open week')
   const scores = cycle.scores.map((s, w) => (w === week ? score : s))
-  const next: Cycle = { ...cycle, scores }
+  const scored = cycle.scores.map((_, w) => (w === week ? today : (cycle.scored?.[w] ?? null)))
+  const next: Cycle = { ...cycle, scores, scored }
   if (isTestWeek(program, week) || week === scores.length - 1) {
     const old = cycle.oldBest ?? 0
     next.newBest = isTestWeek(program, week) && typeof score === 'number' ? Math.max(old, score) : cycle.oldBest
@@ -134,7 +155,8 @@ export function undoScore(cycle: Cycle): Cycle {
   const last = (week < 0 ? cycle.scores.length : week) - 1
   if (last < 0) return cycle
   const scores = cycle.scores.map((s, w) => (w === last ? null : s))
-  return { ...cycle, scores, done: false, finished: null, newBest: null }
+  const scored = cycle.scored?.map((d, w) => (w === last ? null : d))
+  return { ...cycle, scores, ...(scored && { scored }), done: false, finished: null, newBest: null }
 }
 
 export function newCycle(exercise: string, program: Program, oldBest: number | null, today: string): Cycle {
@@ -145,6 +167,7 @@ export function newCycle(exercise: string, program: Program, oldBest: number | n
     started: today,
     oldBest,
     scores: program.weeks.map(() => null),
+    scored: program.weeks.map(() => null),
     add: 0,
     done: false,
     finished: null,
@@ -178,7 +201,33 @@ export function improvement(cycle: Cycle): number | null {
   return (cycle.newBest - cycle.oldBest) / cycle.oldBest
 }
 
-export function today(): string {
-  const d = new Date()
-  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10)
+/** Dates and training weeks are reckoned in this zone, whatever the device's own setting. */
+export const TIME_ZONE = 'Europe/Helsinki'
+
+// en-CA formats a date as YYYY-MM-DD.
+const DATE_IN_ZONE = new Intl.DateTimeFormat('en-CA', {
+  timeZone: TIME_ZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+})
+
+/** The date in TIME_ZONE as YYYY-MM-DD. */
+export function today(now: Date = new Date()): string {
+  return DATE_IN_ZONE.format(now)
+}
+
+/** Monday of the training week (Monday 00:00 to Sunday 24:00) a YYYY-MM-DD date falls in. */
+export function weekStart(date: string): string {
+  const d = new Date(`${date}T00:00:00Z`)
+  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7))
+  return d.toISOString().slice(0, 10)
+}
+
+/** Whether the cycle's latest entry, a result or a skip, was made in the same week as `today`. */
+export function doneThisWeek(cycle: Cycle, today: string): boolean {
+  const dates = (cycle.scored ?? []).filter((d): d is string => d !== null)
+  if (!dates.length) return false
+  const last = dates.reduce((a, b) => (b > a ? b : a))
+  return weekStart(last) === weekStart(today)
 }

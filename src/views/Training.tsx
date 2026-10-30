@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { timerPlan } from '../../shared/timer.ts'
-import { currentWeek, finishCycle, plan, recordScore, today, undoScore } from '../../shared/training.ts'
+import {
+  currentWeek,
+  doneThisWeek,
+  equipmentKind,
+  finishCycle,
+  plan,
+  recordScore,
+  stepAdjust,
+  today,
+  undoScore,
+} from '../../shared/training.ts'
 import type { Cycle, Program } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import empty from '../assets/empty.webp'
@@ -23,16 +33,19 @@ export function Training(ctx: Ctx) {
       </div>
     )
   }
+  // Cycles already trained this week go below the rest (the sort is stable).
+  const now = today()
+  const sorted = [...active].sort((a, b) => Number(doneThisWeek(a, now)) - Number(doneThisWeek(b, now)))
   return (
     <>
-      {active.map((c) => (
-        <CycleCard key={c.id} ctx={ctx} cycle={c} />
+      {sorted.map((c) => (
+        <CycleCard key={c.id} ctx={ctx} cycle={c} doneNow={doneThisWeek(c, now)} />
       ))}
     </>
   )
 }
 
-function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
+function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: boolean }) {
   const ex = exercise(ctx.data, cycle.exercise)
   const prog = program(ctx.data, cycle.program)
   const icon = exerciseIcon(cycle.exercise)
@@ -57,8 +70,11 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
   const valid = value.trim() !== '' && Number.isFinite(n) && n >= 0
   const week = currentWeek(cycle)
   const hasScores = cycle.scores.some((s) => s !== null)
-  // Half-kilo steps, rounded so repeated taps do not drift in floating point.
-  const adjust = (step: number) => change((c) => ({ ...c, add: Math.round((c.add + step) * 2) / 2 }))
+  // Each tap moves to the next loadable weight, so it always changes what is shown.
+  const kind = ctx.data.weights[equipmentKind(ex)]
+  const lower = prog ? stepAdjust(cycle, prog, kind, -1) : null
+  const higher = prog ? stepAdjust(cycle, prog, kind, 1) : null
+  const adjust = (add: number | null) => add !== null && change((c) => ({ ...c, add }))
   const end = () =>
     setAsk({
       title: `End ${ex.name}?`,
@@ -79,7 +95,12 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
     })
 
   return (
-    <section className="card">
+    <section className={doneNow ? 'card week-done' : 'card'}>
+      {doneNow && (
+        <span className="week-tick" role="img" aria-label="Done this week" title="Done this week">
+          ✓
+        </span>
+      )}
       <div className="card-title">
         {icon && <img className="ex-icon" src={icon} alt="" />}
         <div className="card-head">
@@ -132,14 +153,14 @@ function CycleCard({ ctx, cycle }: { ctx: Ctx; cycle: Cycle }) {
                 Plan {kg(p.target)} · old best {kg(cycle.oldBest)}
               </div>
               <div className="adjust">
-                <button type="button" onClick={() => adjust(-0.5)} aria-label="Lower the proposal by 0.5 kg">
+                <button type="button" onClick={() => adjust(lower)} disabled={lower === null} aria-label="Lighter">
                   −
                 </button>
                 <span>
                   Adjust {cycle.add > 0 ? '+' : ''}
                   {cycle.add} kg
                 </span>
-                <button type="button" onClick={() => adjust(0.5)} aria-label="Raise the proposal by 0.5 kg">
+                <button type="button" onClick={() => adjust(higher)} disabled={higher === null} aria-label="Heavier">
                   +
                 </button>
               </div>

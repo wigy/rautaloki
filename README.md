@@ -75,7 +75,8 @@ writer, so run one instance only.
 | `data/secret` | the key session cookies are signed with |
 
 A cycle stores `scores`, one per program week: kg lifted, `"-"` for a skipped
-week, `null` for not done yet. Records, improvements and the next proposal are
+week, `null` for not done yet, and beside them `scored`, the date each one was
+entered (missing in data from before it was kept). Records, improvements and the next proposal are
 derived from these, never stored. Saves carry the file's ETag (`If-Match`), so a
 stale tab gets a 412 instead of overwriting another device's entry.
 
@@ -89,11 +90,18 @@ All in `shared/training.ts`:
 - **target** for week *w* = old best × program % of week *w*, rounded to the nearest 0.5 kg
 - **performance** of a done week = kg lifted / that week's target
 - **proposal** for the current week = target × best performance so far + adjustment, rounded to the nearest 0.5 kg
+- **adjustment** is set with − / +, each tap moving the shown load to the next lighter or
+  heavier loadable weight, so a tap always changes it even where loads are more than
+  0.5 kg apart or the plan is below the empty bar
 - **load** = the heaviest weight in the equipment's table not above the proposal,
   shown as the plates to put on. Barbell 7 kg, dumbbell handle 1 kg; equipment
   kind is chosen from the catalog in this order: Barbell, Dumbbells (pair),
   Dumbbell (single), other
 - **new best** = max(old best, test result); a skipped test keeps the old best
+- **training week** runs Monday 00:00 to Sunday 24:00. Dates are reckoned in
+  `TIME_ZONE` (Europe/Helsinki), not the device's zone. A cycle whose latest entry,
+  result or skip, falls in the current week is shown below the others, dimmed and
+  ticked, with every control still usable
 
 ## Timer
 

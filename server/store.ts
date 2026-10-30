@@ -144,6 +144,9 @@ function validateUser(user: User, id: string): void {
     ids.add(c.id)
     if (typeof c.exercise !== 'string' || typeof c.program !== 'string') fail(`${at}: exercise/program`)
     if (!Array.isArray(c.scores) || !c.scores.every(isScore)) fail(`${at}: scores`)
+    const scored = c.scored
+    if (scored !== undefined && (!Array.isArray(scored) || scored.length !== c.scores.length || !scored.every(isDate)))
+      fail(`${at}: scored`)
     if (!isNum(c.oldBest) || !isNum(c.newBest) || typeof c.add !== 'number') fail(`${at}: numbers`)
     if (!isDate(c.started) || !isDate(c.finished)) fail(`${at}: dates`)
     if (typeof c.done !== 'boolean') fail(`${at}: done`)

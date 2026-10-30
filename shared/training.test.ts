@@ -3,16 +3,20 @@ import { describe, expect, it } from 'vitest'
 import {
   bestPerformance,
   currentWeek,
+  doneThisWeek,
   finishCycle,
   newCycle,
   plan,
   recordScore,
   records,
   roundHalf,
+  stepAdjust,
   target,
+  today,
   undoScore,
+  weekStart,
 } from './training.ts'
-import type { Exercise, Program, User, Weights } from './types.ts'
+import type { Cycle, Exercise, Program, User, Weights } from './types.ts'
 
 // Rules are tested on fixtures/ (reference data plus an example user whose cycles carry
 // numbers from the original sheets). data/ is personal and not in git; when present,
@@ -115,5 +119,63 @@ describe('recording', () => {
     c = undoScore(c)
     expect(c).toMatchObject({ done: false, finished: null, newBest: null })
     expect(currentWeek(c)).toBe(4)
+  })
+})
+
+describe('training week', () => {
+  const p = prog('10-x-10')
+
+  it('dates are Helsinki dates, whatever the device zone', () => {
+    // 22:30 UTC on Sunday is already Monday 00:30 in Helsinki (UTC+2 in winter).
+    expect(today(new Date('2026-11-01T22:30:00Z'))).toBe('2026-11-02')
+    expect(today(new Date('2026-11-01T21:30:00Z'))).toBe('2026-11-01')
+  })
+
+  it('weeks run from Monday to Sunday', () => {
+    expect(weekStart('2026-10-26')).toBe('2026-10-26') // Monday
+    expect(weekStart('2026-10-30')).toBe('2026-10-26') // Friday
+    expect(weekStart('2026-11-01')).toBe('2026-10-26') // Sunday
+    expect(weekStart('2026-11-02')).toBe('2026-11-02') // next Monday
+  })
+
+  it('a cycle counts as done this week from its latest entry, skips included', () => {
+    let c = newCycle('bench-press', p, 50, '2026-10-01')
+    expect(doneThisWeek(c, '2026-10-30')).toBe(false)
+    c = recordScore(c, p, 30, '2026-10-20')
+    expect(doneThisWeek(c, '2026-10-30')).toBe(false)
+    c = recordScore(c, p, '-', '2026-10-26')
+    expect(c.scored?.slice(0, 2)).toEqual(['2026-10-20', '2026-10-26'])
+    expect(doneThisWeek(c, '2026-11-01')).toBe(true)
+    expect(doneThisWeek(c, '2026-11-02')).toBe(false)
+    expect(doneThisWeek(undoScore(c), '2026-10-30')).toBe(false)
+  })
+
+  it('cycles from before entry dates were kept are never done this week', () => {
+    const c = example.cycles.find((c) => !c.done)!
+    expect(c.scored).toBeUndefined()
+    expect(doneThisWeek(c, '2026-10-30')).toBe(false)
+  })
+})
+
+describe('adjusting the proposal', () => {
+  // A light first week on the barbell: 10 kg * 0.5 = 5 kg, below the empty 7 kg bar.
+  const p: Program = { id: 'light', name: 'Light', weeks: [{ scheme: '3 x 20', pct: 0.5 }, { scheme: 'TEST', pct: 1 }] }
+  const shown = (c: Cycle) => plan(c, p, ex('curl'), weights)!.load!.total
+
+  it('each step moves to the next loadable weight', () => {
+    let c = newCycle('curl', p, 10, '2026-10-30')
+    expect(shown(c)).toBe(7)
+    const up = stepAdjust(c, p, weights.barbell, 1)!
+    c = { ...c, add: up }
+    expect(shown(c)).toBe(9)
+    c = { ...c, add: stepAdjust(c, p, weights.barbell, 1)! }
+    expect(shown(c)).toBe(9.5)
+    c = { ...c, add: stepAdjust(c, p, weights.barbell, -1)! }
+    expect(shown(c)).toBe(9)
+  })
+
+  it('cannot go below the empty bar', () => {
+    const c = newCycle('curl', p, 10, '2026-10-30')
+    expect(stepAdjust(c, p, weights.barbell, -1)).toBeNull()
   })
 })
