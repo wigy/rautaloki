@@ -403,4 +403,230 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     watch: ['Upper arms stay still, elbows pointing up.', 'Lower slowly: the bar comes close to your head.'],
   },
+  'db-weighted-crunch': {
+    steps: [
+      'Lie on your back, knees bent and feet flat, a dumbbell held against the chest.',
+      'Curl the shoulders off the floor by rolling the ribs towards the hips.',
+      'Pause at the top, then lower slowly until the shoulder blades touch down.',
+    ],
+    watch: ['Keep the chin off the chest and the neck relaxed.', 'Lift with the abs; do not swing up.'],
+  },
+  'db-woodchop': {
+    steps: [
+      'Stand feet wide, a dumbbell held in both hands by the outside of one knee.',
+      'Rotate and lift it diagonally across the body to above the opposite shoulder.',
+      'Bring it back down along the same line under control.',
+      'Do all the reps one way, then switch sides.',
+    ],
+    watch: ['Turn through the trunk and let the back foot pivot.', 'Keep the arms long; the abs do the work.'],
+  },
+  'reverse-curl': {
+    steps: [
+      'Stand tall, the bar held at arm length in an overhand grip, shoulder width.',
+      'Curl the bar up to the shoulders keeping the palms down.',
+      'Lower slowly to straight arms.',
+    ],
+    watch: ['Elbows stay at your sides.', 'Keep the wrists straight; use a lighter weight than a normal curl.'],
+  },
+  'db-incline-curl': {
+    steps: [
+      'Sit back on a bench inclined to about 45°, arms hanging straight down, palms forward.',
+      'Curl both dumbbells up without moving the upper arms.',
+      'Lower slowly until the arms are fully straight.',
+    ],
+    watch: ['Upper arms stay vertical; the shoulders do not come forward.', 'Keep the head and back on the bench.'],
+  },
+  'standing-calf-raise': {
+    steps: [
+      'Take the bar from the rack across the upper back.',
+      'Stand with the balls of the feet on the block, heels free.',
+      'Lower the heels as far as is comfortable, then rise as high as you can on the toes.',
+      'Pause at the top before lowering.',
+    ],
+    watch: ['Knees straight but not locked.', 'Full range each rep; no bouncing at the bottom.'],
+  },
+  'db-incline-bench-press': {
+    steps: [
+      'Sit on a bench inclined to about 30°, dumbbells on the thighs, then lie back and bring them to the shoulders.',
+      'Press them up over the upper chest until the arms are straight.',
+      'Lower slowly back to the sides of the chest.',
+    ],
+    watch: ['Shoulder blades pulled back and down.', 'Elbows at about 45° from the body, not flared straight out.'],
+  },
+  'db-flyes': {
+    steps: [
+      'Lie on the bench, dumbbells pressed up over the chest, palms facing each other.',
+      'With a slight bend in the elbows, open the arms wide until you feel a stretch in the chest.',
+      'Bring the dumbbells back together over the chest in the same arc.',
+    ],
+    watch: ['Keep the elbow bend fixed: it is a hug, not a press.', 'Do not lower below the shoulders; go light.'],
+  },
+  'floor-press': {
+    steps: [
+      'Lie on the floor under the bar in the rack, knees bent, feet flat.',
+      'Take the bar slightly wider than shoulder width and lift it out over the chest.',
+      'Lower until the upper arms touch the floor, pause, and press back up.',
+    ],
+    watch: ['Let the arms settle on the floor; do not bounce them.', 'Elbows at about 45° from the body.'],
+  },
+  'wrist-curl': {
+    steps: [
+      'Sit on the bench, forearms on the thighs, the bar held palms up with the wrists just past the knees.',
+      'Let the bar roll down towards the fingers.',
+      'Curl it back up with the wrists as high as you can.',
+    ],
+    watch: ['Only the wrists move; the forearms stay on the thighs.', 'Slow and controlled; it is a small muscle.'],
+  },
+  'reverse-wrist-curl': {
+    steps: [
+      'Sit on the bench, forearms on the thighs, the bar held palms down with the wrists just past the knees.',
+      'Lower the bar by bending the wrists down.',
+      'Lift it with the backs of the hands as high as you can.',
+    ],
+    watch: ['Only the wrists move.', 'Use clearly less weight than in the wrist curl.'],
+  },
+  'hip-thrust': {
+    steps: [
+      'Sit on the floor with the shoulder blades against the side of the bench, the bar over the hips.',
+      'Feet flat, about hip width, knees bent.',
+      'Drive through the heels and lift the hips until the body is straight from shoulders to knees.',
+      'Squeeze the glutes at the top, then lower under control.',
+    ],
+    watch: [
+      'Chin tucked and ribs down; do not arch the lower back at the top.',
+      'Shins vertical at the top. A pad on the bar spares the hips.',
+    ],
+  },
+  'db-step-up': {
+    steps: [
+      'Stand facing the bench, a dumbbell in each hand at your sides.',
+      'Place one whole foot on the bench and step up by pushing through that heel.',
+      'Stand tall on the bench, then step back down with the same leg leading down last.',
+      'Do all the reps on one leg, then switch.',
+    ],
+    watch: ['Lift with the front leg; do not push off the back foot.', 'Keep the knee in line with the toes.'],
+  },
+  'db-romanian-deadlift': {
+    steps: [
+      'Stand with a dumbbell in each hand in front of the thighs, knees slightly bent.',
+      'Push the hips back and lower the dumbbells along the legs, back flat.',
+      'Stop when you feel a stretch in the hamstrings, about mid shin.',
+      'Drive the hips forward to stand back up.',
+    ],
+    watch: ['The back stays flat; the movement is at the hips.', 'Dumbbells stay close to the legs.'],
+  },
+  'db-pullover': {
+    steps: [
+      'Lie on the bench holding one dumbbell with both hands over the chest, arms almost straight.',
+      'Lower it in an arc behind the head until the upper arms are in line with the body.',
+      'Pull it back over the chest along the same arc.',
+    ],
+    watch: ['Keep the elbow bend fixed.', 'Keep the ribs down; do not arch the back as the weight goes back.'],
+  },
+  'good-morning': {
+    steps: [
+      'Take the bar from the rack across the upper back, feet hip width, knees slightly bent.',
+      'Push the hips back and bend forward with a flat back until the torso is near level.',
+      'Drive the hips forward to stand back up.',
+    ],
+    watch: ['Back flat and chest up the whole time.', 'Start light: the lower back takes a long lever.'],
+  },
+  'pendlay-row': {
+    steps: [
+      'Stand over the bar, feet hip width, and bend over with a flat back until the torso is near level.',
+      'Take an overhand grip a little wider than shoulder width.',
+      'Pull the bar explosively from the floor to the lower chest.',
+      'Lower it back to the floor and let it settle before the next rep.',
+    ],
+    watch: [
+      'The torso stays still; do not stand up to lift the bar.',
+      'Each rep starts from a dead stop on the floor.',
+    ],
+  },
+  'front-squat': {
+    steps: [
+      'Take the bar from the rack on the front of the shoulders, fingers under it, elbows high.',
+      'Stand feet shoulder width and squat down with an upright torso.',
+      'Go as deep as you can with a flat back, then stand back up.',
+    ],
+    watch: ['Keep the elbows high so the bar does not roll forward.', 'Knees follow the toes.'],
+  },
+  'db-bulgarian-split-squat': {
+    steps: [
+      'Stand a long step in front of the bench, the top of the back foot on it, a dumbbell in each hand.',
+      'Lower straight down until the front thigh is about level.',
+      'Push through the front heel to come back up.',
+      'Do all the reps on one leg, then switch.',
+    ],
+    watch: ['The front knee follows the toes.', 'Torso upright; the back leg only balances.'],
+  },
+  'db-lateral-raise': {
+    steps: [
+      'Stand tall, a dumbbell in each hand at your sides, elbows slightly bent.',
+      'Raise the arms out to the sides up to shoulder height.',
+      'Lower slowly back down.',
+    ],
+    watch: ['Lead with the elbows; do not shrug the shoulders.', 'Go light and do not swing.'],
+  },
+  'db-arnold-press': {
+    steps: [
+      'Sit on the chair, dumbbells in front of the shoulders, palms facing you.',
+      'Press them up, turning the palms forward as they rise.',
+      'Straighten the arms overhead, then reverse the turn on the way down.',
+    ],
+    watch: ['Keep the back against the chair; do not lean back.', 'A smooth turn, no jerking at the top.'],
+  },
+  'push-press': {
+    steps: [
+      'Take the bar from the rack on the front of the shoulders, grip just wider than shoulders.',
+      'Dip a few centimetres at the knees, torso upright.',
+      'Drive up with the legs and press the bar overhead to straight arms.',
+      'Lower it back to the shoulders, bending the knees slightly to cushion it.',
+    ],
+    watch: ['The dip is short and straight down, not a squat.', 'Move the head back for the bar, then under it.'],
+  },
+  shrug: {
+    steps: [
+      'Take the bar from the rack and stand with it at arm length in front of the thighs.',
+      'Lift the shoulders straight up towards the ears as high as you can.',
+      'Hold for a moment, then lower slowly.',
+    ],
+    watch: ['Straight up and down; do not roll the shoulders.', 'The arms stay straight; do not pull with them.'],
+  },
+  'db-shrug': {
+    steps: [
+      'Stand tall, a dumbbell in each hand at your sides.',
+      'Lift the shoulders straight up towards the ears as high as you can.',
+      'Hold for a moment, then lower slowly.',
+    ],
+    watch: ['Straight up and down; do not roll the shoulders.', 'Keep the head still and the arms straight.'],
+  },
+  'close-grip-bench-press': {
+    steps: [
+      'Lie on the bench under the bar, hands at shoulder width.',
+      'Lift it out and lower it to the lower chest, elbows close to the body.',
+      'Press back up to straight arms.',
+    ],
+    watch: [
+      'Hands no narrower than the shoulders; it strains the wrists.',
+      'Elbows stay tucked; use a spotter or the rack safeties.',
+    ],
+  },
+  'db-overhead-triceps-extension': {
+    steps: [
+      'Sit tall on the chair, one dumbbell held in both hands overhead.',
+      'Bend only the elbows to lower it behind the head.',
+      'Straighten the arms back up overhead.',
+    ],
+    watch: ['Elbows point up and stay close to the head.', 'Keep the ribs down; do not arch the back.'],
+  },
+  'db-kickback': {
+    steps: [
+      'Put one knee and hand on the bench, back flat, a dumbbell in the other hand.',
+      'Bring that upper arm along your side, parallel to the floor, elbow bent.',
+      'Straighten the arm back until it is in line with the body.',
+      'Bend it back slowly. Do all the reps, then switch.',
+    ],
+    watch: ['The upper arm stays still; only the forearm moves.', 'Go light and pause at full extension.'],
+  },
 }
