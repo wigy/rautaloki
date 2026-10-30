@@ -221,7 +221,7 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
           </div>
         </div>
         <button className="link" onClick={onClose}>
-          Close
+          ← Back
         </button>
       </div>
       <div className="timer-body">{body}</div>

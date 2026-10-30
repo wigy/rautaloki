@@ -120,11 +120,6 @@ function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: b
           <div className="plan-week">
             Week {p.week + 1}/{prog.weeks.length}
             <strong className={p.isTest ? 'test' : ''}>{p.scheme}</strong>
-            {segments && (
-              <button type="button" className="timer-open" onClick={() => setTiming(true)}>
-                ▶ Timer
-              </button>
-            )}
           </div>
           {timing && segments && (
             <SetTimer
@@ -173,6 +168,15 @@ function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: b
                 </button>
               </div>
             </>
+          )}
+          {segments && (
+            <button type="button" className="exercise-now" onClick={() => setTiming(true)}>
+              <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" strokeWidth="2" />
+                <path d="M9.5 7.5v9l7-4.5z" fill="currentColor" />
+              </svg>
+              Exercise Now
+            </button>
           )}
           <form
             className="entry"
