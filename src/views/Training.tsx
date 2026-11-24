@@ -41,6 +41,9 @@ export function Training(ctx: Ctx) {
       {sorted.map((c) => (
         <CycleCard key={c.id} ctx={ctx} cycle={c} doneNow={doneThisWeek(c, now)} />
       ))}
+      <button className="new-cycle" onClick={() => ctx.go('new')}>
+        + New cycle
+      </button>
     </>
   )
 }

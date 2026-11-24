@@ -4,7 +4,7 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import type { Cycle, Reference, User } from '../shared/types.ts'
+import type { Cycle, Performed, Reference, Session, User } from '../shared/types.ts'
 
 export class Store {
   readonly dir: string
@@ -155,5 +155,20 @@ function validateUser(user: User, id: string): void {
     const t = user.tempo
     if (!t || typeof t !== 'object' || Array.isArray(t)) fail('tempo must be an object')
     if (!Object.values(t).every((v) => typeof v === 'number' && v > 0)) fail('tempo values must be positive numbers')
+  }
+  if (user.sessions !== undefined) {
+    if (!Array.isArray(user.sessions)) fail('sessions must be an array')
+    const sids = new Set<string>()
+    user.sessions.forEach((s: Session, i) => {
+      const at = `sessions[${i}]`
+      if (!s || typeof s.id !== 'string' || sids.has(s.id)) fail(`${at}: missing or duplicate id`)
+      sids.add(s.id)
+      if (s.kind !== 'bodyweight' && s.kind !== 'stretch') fail(`${at}: kind`)
+      if (typeof s.plan !== 'string' || !s.date || !isDate(s.date)) fail(`${at}: plan/date`)
+      if (typeof s.seconds !== 'number' || !(s.seconds > 0)) fail(`${at}: seconds`)
+      const okPerformed = (p: Performed) =>
+        p && typeof p.id === 'string' && (p.reps === null || (Number.isInteger(p.reps) && p.reps >= 0))
+      if (!Array.isArray(s.exercises) || !s.exercises.every(okPerformed)) fail(`${at}: exercises`)
+    })
   }
 }

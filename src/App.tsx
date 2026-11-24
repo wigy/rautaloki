@@ -1,18 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Me, Reference, User } from '../shared/types.ts'
 import { getMe, getReference, getUser, LoggedOutError, logout, putUser, StaleError } from './api.ts'
+import { BodyWeight } from './views/BodyWeight.tsx'
 import { History } from './views/History.tsx'
 import { Login } from './views/Login.tsx'
 import { NewCycle } from './views/NewCycle.tsx'
 import { Records } from './views/Records.tsx'
+import { Stopwatch } from './views/Stopwatch.tsx'
+import { Stretching } from './views/Stretching.tsx'
 import { Training } from './views/Training.tsx'
 
-export type View = 'training' | 'new' | 'records' | 'history'
+export type View = 'training' | 'new' | 'bodyweight' | 'stretch' | 'records' | 'history'
 export type Update = (change: (user: User) => User) => void
 
+// New cycle is reached from the Lifts tab, and counts as part of it.
 const TABS: [View, string][] = [
-  ['training', 'Training'],
-  ['new', 'New cycle'],
+  ['training', 'Lifts'],
+  ['bodyweight', 'Body'],
+  ['stretch', 'Stretch'],
   ['records', 'Records'],
   ['history', 'History'],
 ]
@@ -32,6 +37,7 @@ export function App() {
   const [exercise, setExercise] = useState<string>()
   const [error, setError] = useState<string>()
   const [saving, setSaving] = useState(false)
+  const [stopwatch, setStopwatch] = useState(false)
   const version = useRef('')
   const queue = useRef(Promise.resolve())
 
@@ -114,13 +120,23 @@ export function App() {
         <span className={`saving ${saving ? 'on' : ''}`} aria-live="polite">
           {saving ? 'Saving…' : ''}
         </span>
+        <button className="stopwatch-open" onClick={() => setStopwatch(true)} aria-label="Stopwatch" title="Stopwatch">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <circle cx="12" cy="14" r="8" fill="none" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 14V9.5M9.5 2.5h5M12 2.5V6M18.5 6.5l1.5-1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
         <button className="link" onClick={signOut}>
           Log out
         </button>
       </header>
       <nav>
         {TABS.map(([v, label]) => (
-          <button key={v} className={view === v ? 'active' : ''} onClick={() => go(v)}>
+          <button
+            key={v}
+            className={view === v || (v === 'training' && view === 'new') ? 'active' : ''}
+            onClick={() => go(v)}
+          >
             {label}
           </button>
         ))}
@@ -137,12 +153,17 @@ export function App() {
           <Training data={ref} user={user} update={update} go={go} />
         ) : view === 'new' ? (
           <NewCycle data={ref} user={user} update={update} go={go} />
+        ) : view === 'bodyweight' ? (
+          <BodyWeight data={ref} user={user} update={update} go={go} />
+        ) : view === 'stretch' ? (
+          <Stretching data={ref} user={user} update={update} go={go} />
         ) : view === 'records' ? (
           <Records data={ref} user={user} update={update} go={go} />
         ) : (
           <History data={ref} user={user} update={update} go={go} exercise={exercise} setExercise={setExercise} />
         )}
       </main>
+      {stopwatch && <Stopwatch onClose={() => setStopwatch(false)} />}
     </>
   )
 }

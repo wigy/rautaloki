@@ -67,6 +67,30 @@ export interface User {
   cycles: Cycle[]
   /** Timer tempo by exercise id, a factor on the seconds per repeat: 0.5 is twice as fast. Missing is 1. */
   tempo?: Record<string, number>
+  /** Body weight and stretching sessions, oldest first. Missing in older data. */
+  sessions?: Session[]
+}
+
+/** One exercise of a session as performed. */
+export interface Performed {
+  /** Exercise id in shared/bodyweight.ts or stretch id in shared/stretching.ts. */
+  id: string
+  /** Repeats over all rounds, null when not counted (holds, stretches, not entered). */
+  reps: number | null
+}
+
+/** One timed body weight or stretching session. */
+export interface Session {
+  id: string
+  kind: 'bodyweight' | 'stretch'
+  /** Body weight day or stretching routine id. */
+  plan: string
+  /** YYYY-MM-DD in TIME_ZONE. */
+  date: string
+  /** Work seconds per interval (body weight) or seconds per hold (static stretching). */
+  seconds: number
+  /** The exercises actually performed, in order. */
+  exercises: Performed[]
 }
 
 export interface Reference {

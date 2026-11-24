@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { type Segment, stepTempo, tempoPercent } from '../../shared/timer.ts'
+import { say, useWakeLock } from '../speech.ts'
 
 interface Props {
   segments: Segment[]
@@ -15,18 +16,8 @@ interface Props {
   onClose: () => void
 }
 
-function say(text: string) {
-  const s = window.speechSynthesis
-  if (!s) return
-  s.cancel()
-  const u = new SpeechSynthesisUtterance(text)
-  u.lang = 'en-US'
-  u.rate = 1.1
-  s.speak(u)
-}
-
 // A cue more than this late (the phone slept, the tab was hidden) is dropped rather than spoken.
-const STALE = 2
+export const STALE = 2
 
 /** Full-screen timer that runs the segments and speaks their cues. */
 export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo, onDone, onClose }: Props) {
@@ -229,26 +220,6 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
   )
 }
 
-function fmt(s: number): string {
+export function fmt(s: number): string {
   return s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}` : String(s)
-}
-
-/** Keep the screen on while the timer is open, re-acquiring the lock when the page comes back. */
-function useWakeLock() {
-  useEffect(() => {
-    let lock: WakeLockSentinel | null = null
-    const get = () => {
-      if (document.visibilityState === 'visible')
-        navigator.wakeLock
-          ?.request('screen')
-          .then((l) => (lock = l))
-          .catch(() => {})
-    }
-    get()
-    document.addEventListener('visibilitychange', get)
-    return () => {
-      document.removeEventListener('visibilitychange', get)
-      lock?.release().catch(() => {})
-    }
-  }, [])
 }

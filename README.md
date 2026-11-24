@@ -70,7 +70,7 @@ writer, so run one instance only.
 | `data/catalog.json` | exercises: main/other muscles, equipment, level, reference URL |
 | `data/programs.json` | programs: per week a scheme and a percentage of the old best |
 | `data/weights.json` | loadable weights per equipment kind with the plates that make them |
-| `data/users/<id>.json` | one user: name, all their cycles and timer tempo per exercise |
+| `data/users/<id>.json` | one user: name, all their cycles, timer tempo per exercise, and body weight and stretching sessions |
 | `data/passwords.json` | scrypt password hashes by user id, never sent to the UI |
 | `data/secret` | the key session cookies are signed with |
 
@@ -79,6 +79,12 @@ week, `null` for not done yet, and beside them `scored`, the date each one was
 entered (missing in data from before it was kept). Records, improvements and the next proposal are
 derived from these, never stored. Saves carry the file's ETag (`If-Match`), so a
 stale tab gets a 412 instead of overwriting another device's entry.
+
+Body weight and stretching sessions are kept beside the cycles as `sessions`: the date, the
+day or routine, its seconds (work per interval, or seconds per hold) and the exercises
+actually performed, each with the repeats counted over all rounds or `null`. Their
+exercises, days and routines are fixed in code (`shared/bodyweight.ts`,
+`shared/stretching.ts`), so they need no file in `data/`.
 
 New users are created from the login screen as `data/users/<id>.json`, with the id
 derived from the name.
@@ -117,3 +123,36 @@ in steps of 25 % of normal speed (50 % to 325 %); a change mid-set keeps the lif
 same repeat. It is kept in the user's file as `tempo`, by exercise id. With a keyboard,
 p or space pauses and + / − change the tempo. *Done* on the final screen saves the
 weight in the entry field, like the card's Done button.
+
+## Body weight
+
+The *Body* tab runs the five days of the old time2xercise "Fitness" body weight timer
+(`shared/bodyweight.ts`, `shared/intervals.ts`): each day is three rounds of its 3-5
+exercises, each a one minute interval of work and rest, with a minute between rounds.
+The level is work:rest, from 30:30 to 60:00 in 5 s steps, set with − / + and proposed
+from the last session of that day (else of any day). The timer says the next exercise in
+each rest, "go" at the start, and counts the last three seconds; at 60:00 there is no rest
+and the next exercise is called by name. An exercise counts as performed once its work
+has run 3 s; at the end the repeats of each performed one can be entered (optional, none
+for holds), and *Save* stores the session. *Log without timer* records one by hand.
+A day done this week goes below the others, dimmed and ticked, as cycles do.
+
+## Stretching
+
+The *Stretch* tab has guided routines (`shared/stretching.ts`), following the usual advice:
+
+- **Warm-up**: dynamic moves before lifting (30 s each, 20 s per side), because long
+  static holds right before lifting lower strength and power a little, while a dynamic
+  warm-up does not.
+- **Full body** and **Hips and back**: static stretches after training or on a rest day,
+  held at mild tension, 2 holds per side alternating sides, so about 60 s per muscle group
+  at the default 30 s hold (15-60 s with − / +). At least 2-3 days a week; daily is best.
+
+Sources: ACSM's [stretching and flexibility guidelines](https://www.acsm.org/blog-detail/acsm-certified-blog/2021/03/18/stretching-and-flexibility-guidelines-update),
+Simic et al. 2013, [Does pre-exercise static stretching inhibit maximal muscular performance?](https://pubmed.ncbi.nlm.nih.gov/22316148/),
+Behm & Chaouachi 2011, [A review of the acute effects of static and dynamic stretching on performance](https://pubmed.ncbi.nlm.nih.gov/21373870/).
+
+## Stopwatch
+
+The ⏱ button in the header opens a plain stopwatch: Start, Stop (and Continue), Reset.
+It says only the whole minutes, "1 minute", "2 minutes", and so on, and stores nothing.
