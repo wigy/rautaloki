@@ -1,11 +1,14 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "com.dataplugoy.rautaloki",
       "sha256_cert_fingerprints": [
-        "0B:0F:03:92:53:9E:64:69:9D:9F:8E:85:5C:3E:B7:48:93:03:72:BB:53:24:12:F2:05:DA:27:79:FD:2D:94:6C"
+        "0B:0F:03:92:53:9E:64:69:9D:9F:8E:85:5C:3E:B7:48:93:03:72:BB:53:24:12:F2:05:DA:27:79:FD:2D:94:6C",
+        "FF:9D:1D:E1:80:20:47:10:A3:21:32:F9:BF:E4:80:4D:63:85:47:70:D8:DE:64:9E:EF:23:18:04:61:0B:DC:62"
       ]
     }
   }

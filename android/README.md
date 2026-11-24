@@ -73,14 +73,16 @@ on a phone with `adb install` to try it). Every upload to Play needs a higher
   - Collects data: **yes**. Shares data with third parties: **no**.
   - Encrypted in transit: **yes**. Users can ask for deletion: **yes**, in the app (tap the
     name → Delete account) and at https://rautaloki.dataplug-oy.com/privacy.html#delete
-  - **Personal info → User IDs** (the account name): collected, required, for *Account
-    management* and *App functionality*.
+  - **Personal info → Email address** (of the Google account used to sign in): collected,
+    required, for *Account management*.
+  - **Personal info → Name** (from the Google account, shown in the app): collected,
+    required, for *Account management* and *App functionality*.
   - **Health and fitness → Fitness info** (lifts, weights, sessions): collected, required,
     for *App functionality*.
   - **App activity → App interactions** (anonymous page view counts in the self-hosted
     Umami): collected, for *Analytics*; not linked to the user.
-  - Passwords are not declared as collected data in their own right (only a hash is stored),
-    and no location, contacts, photos, audio, files, device IDs or financial data are collected.
+  - Sign-in is with Google: the app gets the name and verified email only, never a password.
+    No location, contacts, photos, audio, files, device IDs or financial data are collected.
 - **Account deletion URL** (asked separately): https://rautaloki.dataplug-oy.com/privacy.html#delete
 
 ### Store listing
