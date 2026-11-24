@@ -1002,3 +1002,7 @@ header .who {
 header .who.active {
   color: var(--accent);
 }
+
+header .link {
+  white-space: nowrap;
+}

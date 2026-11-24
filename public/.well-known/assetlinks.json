@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.dataplugoy.rautaloki",
+      "sha256_cert_fingerprints": [
+        "0B:0F:03:92:53:9E:64:69:9D:9F:8E:85:5C:3E:B7:48:93:03:72:BB:53:24:12:F2:05:DA:27:79:FD:2D:94:6C"
+      ]
+    }
+  }
+]

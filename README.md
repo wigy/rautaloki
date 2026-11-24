@@ -50,6 +50,10 @@ first start; deleting it logs everyone out), and it is also marked Secure when t
 request arrives through an HTTPS proxy (`X-Forwarded-Proto: https`). After 5 wrong
 passwords in a row a user's login is held off for a minute per attempt.
 
+Tapping the name in the header opens the account screen: log out, the privacy policy
+(`public/privacy.html`), and *Delete account*, which asks for the password again and removes
+the user's file and password for good.
+
 Set or change a password from the shell, which also ends that user's old sessions:
 
 ```bash
@@ -65,6 +69,12 @@ docker run -d -p 8910:8910 -v "$PWD/data:/data" rautaloki
 
 The image runs as uid 1000 with the data in `/data`. Put it behind an HTTPS proxy
 before exposing it to the internet.
+
+### Android app
+
+The app is installable from the browser (web app manifest and a service worker that lets
+it start offline), and is published on Google Play by Dataplug Oy as a Trusted Web
+Activity. See [android/README.md](android/README.md) for building and publishing it.
 
 ## Data
 
