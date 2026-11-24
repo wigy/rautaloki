@@ -125,6 +125,17 @@ h2 {
   text-align: center;
 }
 
+.login .demo {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+.login .demo button {
+  min-width: 200px;
+}
+
 .saving {
   font-size: 0.8rem;
   color: var(--muted);

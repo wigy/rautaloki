@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DEMO_ID } from '../../shared/demo.ts'
 import type { User } from '../../shared/types.ts'
 import { deleteAccount } from '../api.ts'
 import { type ConfirmRequest, ConfirmDialog } from './ConfirmDialog.tsx'
@@ -14,6 +15,7 @@ export function Account({ user, onSignOut, onDeleted }: Props) {
   const [error, setError] = useState<string>()
   const [busy, setBusy] = useState(false)
   const [ask, setAsk] = useState<ConfirmRequest | null>(null)
+  const demo = user.id === DEMO_ID
   const cycles = user.cycles.length
   const sessions = user.sessions?.length ?? 0
 
@@ -43,6 +45,12 @@ export function Account({ user, onSignOut, onDeleted }: Props) {
         <p className="muted small">
           {cycles} lifting cycles · {sessions} body weight and stretching sessions
         </p>
+        {demo && (
+          <p className="small">
+            This is the demo: made-up data, reset each time someone opens the demo. Sign in with Google to keep your
+            own log.
+          </p>
+        )}
         <div className="row">
           <button onClick={onSignOut}>Log out</button>
         </div>
@@ -52,20 +60,22 @@ export function Account({ user, onSignOut, onDeleted }: Props) {
           </a>
         </p>
       </section>
-      <section className="card">
-        <h2>Delete account</h2>
-        <p className="small">Removes your account and all your training data from the server for good.</p>
-        <div className="row">
-          <button className="danger" disabled={busy} onClick={remove}>
-            Delete account
-          </button>
-        </div>
-        {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
-        )}
-      </section>
+      {!demo && (
+        <section className="card">
+          <h2>Delete account</h2>
+          <p className="small">Removes your account and all your training data from the server for good.</p>
+          <div className="row">
+            <button className="danger" disabled={busy} onClick={remove}>
+              Delete account
+            </button>
+          </div>
+          {error && (
+            <p className="error" role="alert">
+              {error}
+            </p>
+          )}
+        </section>
+      )}
       <ConfirmDialog request={ask} onClose={() => setAsk(null)} />
     </>
   )

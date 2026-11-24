@@ -4,6 +4,7 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { readdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { DEMO_ID } from '../shared/demo.ts'
 import type { Cycle, Performed, Reference, Session, User } from '../shared/types.ts'
 
 export class Store {
@@ -59,7 +60,8 @@ export class Store {
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '') || 'user'
-    const ids = new Set(await this.userIds())
+    // The demo's id is reserved, so no one signing up can end up with the demo's file.
+    const ids = new Set([...(await this.userIds()), DEMO_ID])
     let id = base
     for (let n = 2; ids.has(id); n++) id = `${base}-${n}`
     const user: User = { id, name: clean, cycles: [] }
@@ -123,6 +125,12 @@ export class Store {
     const key = randomBytes(32)
     await writeFile(file, key.toString('base64url'), { mode: 0o600, flag: 'wx' })
     return key
+  }
+
+  /** Write a user whole, creating or replacing the file without a version check (the demo reset). */
+  async putUser(user: User): Promise<void> {
+    validateUser(user, user.id)
+    await this.write(`users/${user.id}.json`, user)
   }
 
   /** Replace a user's data. `version` must match the stored one, or nothing is written. */

@@ -5,12 +5,13 @@
 //                           credential, g_csrf_token -> sets the session cookie and
 //                           redirects to /, or to /?login=<error>. An email not yet
 //                           linked to anyone gets a new user, named after the account
+//   POST /api/login/demo    resets the demo user from fixtures/ and logs in as it (no Google)
 //   POST /api/logout        clears the cookie
 //   GET  /api/me            the logged-in user's id and name, 401 if none
 //   GET  /api/reference     catalog, programs, weight tables
 //   GET  /api/users/:id     own cycles only (ETag header = version)
 //   PUT  /api/users/:id     replace them; send If-Match with the ETag, 412 if stale
-//   DELETE /api/users/:id   deletes the user and all their data, logs out
+//   DELETE /api/users/:id   deletes the user and all their data, logs out (403 for the demo)
 //   GET  /api/feed?email=&from=&to=  the user's training as calendar events (shared/feed.ts),
 //                           for planner. Server to server: needs Authorization: Bearer
 //                           with EXERCISE_FEED_KEY; 404 if the key is unset or the email unknown
@@ -21,11 +22,13 @@
 
 import { timingSafeEqual } from 'node:crypto'
 import { createReadStream } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import { stat } from 'node:fs/promises'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import { extname, join, normalize, resolve } from 'node:path'
 import { sessionToken, sessionUser } from './auth.ts'
 import { BadToken, googleKeys, verifyGoogleToken } from './google.ts'
+import { DEMO_ID, demoUser } from '../shared/demo.ts'
 import { exerciseFeed } from '../shared/feed.ts'
 import { today } from '../shared/training.ts'
 import { Conflict, etag, Invalid, NotFound, Store } from './store.ts'
@@ -45,6 +48,9 @@ const secret = await store.secret()
 const googleClientId = process.env.GOOGLE_CLIENT_ID ?? ''
 const keys = googleKeys()
 const feedKey = process.env.EXERCISE_FEED_KEY ?? ''
+// The demo has no Google account; its sessions are signed over this instead of an email.
+const DEMO_BINDING = 'demo'
+const DEMO_TEMPLATE = join(root, 'fixtures', 'users', 'example.json')
 if (!googleClientId) console.warn('GOOGLE_CLIENT_ID is not set: nobody can log in')
 
 const types: Record<string, string> = {
@@ -103,7 +109,7 @@ async function me(req: IncomingMessage) {
   const token = cookie(req, COOKIE)
   const logins = token ? await store.logins() : {}
   const emails = Object.fromEntries(Object.entries(logins).map(([email, id]) => [id, email]))
-  const id = token && sessionUser(secret, token, (id) => emails[id])
+  const id = token && sessionUser(secret, token, (id) => (id === DEMO_ID ? DEMO_BINDING : emails[id]))
   if (!id) throw new Unauthorized()
   try {
     return await store.user(id)
@@ -170,6 +176,14 @@ async function api(req: IncomingMessage, res: ServerResponse, path: string) {
       return back(`/?login=${encodeURIComponent(message)}`)
     }
   }
+  if (path === '/api/login/demo' && req.method === 'POST') {
+    // Everyone gets the same fresh demo; whatever the previous visitor did is gone.
+    const template = JSON.parse(await readFile(DEMO_TEMPLATE, 'utf8'))
+    const user = demoUser(template, today())
+    await store.putUser(user)
+    console.log(new Date().toISOString(), 'demo login')
+    return json(res, 200, { id: user.id, name: user.name }, { 'set-cookie': session(req, sessionToken(secret, DEMO_ID, DEMO_BINDING), COOKIE_AGE) })
+  }
   if (path === '/api/logout' && req.method === 'POST') {
     return json(res, 200, { ok: true }, { 'set-cookie': session(req, '', 0) })
   }
@@ -199,6 +213,7 @@ async function api(req: IncomingMessage, res: ServerResponse, path: string) {
     return json(res, 200, { ok: true }, { etag: tag })
   }
   if (m && req.method === 'DELETE') {
+    if (m[1] === DEMO_ID) throw new Forbidden('the demo cannot be deleted')
     await store.deleteUser(m[1])
     console.log(new Date().toISOString(), 'deleted user', m[1])
     return json(res, 200, { ok: true }, { 'set-cookie': session(req, '', 0) })

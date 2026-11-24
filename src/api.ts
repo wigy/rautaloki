@@ -48,6 +48,11 @@ export async function getGoogleClientId(): Promise<string> {
   return (await (await check(await fetch('/api/config'))).json()).googleClientId ?? ''
 }
 
+/** Log in as the demo user, reset to its made-up data. */
+export async function loginDemo(): Promise<Me> {
+  return (await check(await fetch('/api/login/demo', { method: 'POST' }))).json()
+}
+
 export async function logout(): Promise<void> {
   await check(await fetch('/api/logout', { method: 'POST' }))
 }

@@ -33,6 +33,11 @@ describe('store', () => {
     await expect(store.deleteUser(a.id)).rejects.toBeInstanceOf(NotFound)
   })
 
+  it('never gives a new user the demo id', async () => {
+    const store = await fresh()
+    expect((await store.createUser('Demo')).id).toBe('demo-2')
+  })
+
   it('accepts sessions and rejects bad ones', async () => {
     const store = await fresh()
     const u = await store.createUser('Anna')

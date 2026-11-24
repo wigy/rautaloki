@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { getGoogleClientId } from '../api.ts'
+import type { Me } from '../../shared/types.ts'
+import { getGoogleClientId, loginDemo } from '../api.ts'
 import hero from '../assets/login.webp'
 
 const GSI = 'https://accounts.google.com/gsi/client'
@@ -31,10 +32,22 @@ function loadGsi(): Promise<GoogleId> {
  * which sets the session cookie and sends the browser back here. That works the same in
  * a browser, an installed app and the Android app, with no popup.
  */
-export function Login() {
+export function Login({ onLogin }: { onLogin: (me: Me) => void }) {
   const button = useRef<HTMLDivElement>(null)
   // The server sends a failed login back as ?login=<reason>; show it once and drop it.
   const [error, setError] = useState(() => new URLSearchParams(location.search).get('login') ?? undefined)
+  const [busy, setBusy] = useState(false)
+
+  const demo = async () => {
+    setBusy(true)
+    setError(undefined)
+    try {
+      onLogin(await loginDemo())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+      setBusy(false)
+    }
+  }
 
   useEffect(() => {
     if (location.search) history.replaceState(null, '', location.pathname)
@@ -61,6 +74,12 @@ export function Login() {
         <h1>Rautaloki</h1>
         <div className="google" ref={button} />
         <p className="muted small">A new Google account gets a new, empty training log.</p>
+        <div className="demo">
+          <button type="button" onClick={demo} disabled={busy}>
+            Try the demo
+          </button>
+          <p className="muted small">No account needed: a made-up lifter's log, fresh every time.</p>
+        </div>
         {error && <p className="error">{error}</p>}
       </div>
     </main>

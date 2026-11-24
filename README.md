@@ -70,6 +70,11 @@ first start; deleting it logs everyone out) over the user id and the linked emai
 is also marked Secure when the request arrives through an HTTPS proxy
 (`X-Forwarded-Proto: https`).
 
+**Try the demo** on the login screen needs no account: it signs in as the user `demo`, reset
+each time from the made-up example user in `fixtures/` with its dates moved by whole weeks so
+its latest entry falls in last week (`shared/demo.ts`). The id `demo` is reserved, and the
+demo cannot be deleted. Google Play's reviewers use it too.
+
 Tapping the name in the header opens the account screen: log out, the privacy policy
 (`public/privacy.html`), and *Delete account*, which after a confirmation removes the
 user's file and Google link for good.

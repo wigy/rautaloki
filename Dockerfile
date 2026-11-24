@@ -12,6 +12,8 @@ WORKDIR /app
 COPY package.json ./
 COPY server server
 COPY shared shared
+# The demo user is reset from the example user.
+COPY fixtures/users/example.json fixtures/users/example.json
 COPY --from=build /app/dist dist
 # Mount the data directory here. The node user is uid 1000, so files it writes
 # into a bind mount stay owned by the host user of the same uid.

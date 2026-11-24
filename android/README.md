@@ -59,9 +59,11 @@ on a phone with `adb install` to try it). Every upload to Play needs a higher
 ### App content answers
 
 - **Privacy policy:** https://rautaloki.dataplug-oy.com/privacy.html
-- **App access:** all functionality needs an account. Instructions for reviewers: *"Tap 'Sign in with Google' and
-  pick any Google account. A new account gets an empty training log; no invitation is
-  needed."*
+- **App access** (*Sign in details*): Yes, restricted; add details with no username or
+  password, only these instructions: *"On the login screen tap 'Try the demo': it opens a
+  demo account with made-up training data, with no Google account needed. Every feature is
+  available there. (Sign in with Google is for users' own logs.)"* Tick that the details give
+  full access.
 - **Ads:** no ads.
 - **Content rating:** category *Reference, News, or Educational* (or *Utility*); no violence,
   sexual content, profanity, drugs, gambling, user-to-user communication or location sharing.
