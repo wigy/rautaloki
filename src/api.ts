@@ -59,3 +59,14 @@ export async function login(name: string, password: string, create = false): Pro
 export async function logout(): Promise<void> {
   await check(await fetch('/api/logout', { method: 'POST' }))
 }
+
+/** Delete the logged-in user and all their data. Throws on a wrong password. */
+export async function deleteAccount(id: string, password: string): Promise<void> {
+  const res = await fetch(`/api/users/${id}`, {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ password }),
+  })
+  // A 401 here is a wrong password, not a lost session.
+  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `HTTP ${res.status}`)
+}

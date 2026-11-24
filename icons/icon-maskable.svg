@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Rautaloki app icon: a weight plate with a log-book ribbon. Maskable variant: the art is scaled into the 80 % safe zone that launchers may crop to. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b3354"/>
+      <stop offset="1" stop-color="#0d1230"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a3acb1"/>
+      <stop offset="1" stop-color="#6b747a"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(51.2 51.2) scale(0.8)">
+  <g transform="translate(256 268)">
+    <circle r="206" fill="url(#rim)"/>
+    <circle r="172" fill="none" stroke="#24324a" stroke-width="14"/>
+    <circle r="165" fill="#7a8489"/>
+    <circle r="88" fill="none" stroke="#1f2c44" stroke-width="22"/>
+    <circle r="77" fill="#8a9398"/>
+    <circle r="42" fill="none" stroke="#1f2c44" stroke-width="14"/>
+    <circle r="35" fill="#7a8489"/>
+  </g>
+  <path d="M206 40h100v156l-50-34-50 34z" fill="#2a7fcd" stroke="#e3e9ee" stroke-width="7" stroke-linejoin="round"/>
+  </g>
+</svg>

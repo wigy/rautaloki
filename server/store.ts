@@ -2,7 +2,7 @@
 // crash mid-write leaves the previous version intact. Single process only.
 
 import { createHash, randomBytes } from 'node:crypto'
-import { readdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { readdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { Cycle, Performed, Reference, Session, User } from '../shared/types.ts'
 
@@ -90,6 +90,17 @@ export class Store {
   async setPassword(id: string, hash: string): Promise<void> {
     await this.user(id)
     await this.write('passwords.json', { ...(await this.passwords()), [id]: hash }, 0o600)
+  }
+
+  /**
+   * Remove a user and all their data for good. The password goes first, which also ends
+   * every session, so a crash halfway leaves at worst a file nobody can log in to.
+   */
+  async deleteUser(id: string): Promise<void> {
+    await this.user(id)
+    const { [id]: _, ...rest } = await this.passwords()
+    await this.write('passwords.json', rest, 0o600)
+    await unlink(join(this.dir, `users/${id}.json`))
   }
 
   /** The key sessions are signed with, created on first use. Deleting it logs everyone out. */

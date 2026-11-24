@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Me, Reference, User } from '../shared/types.ts'
 import { getMe, getReference, getUser, LoggedOutError, logout, putUser, StaleError } from './api.ts'
+import { Account } from './views/Account.tsx'
 import { BodyWeight } from './views/BodyWeight.tsx'
 import { History } from './views/History.tsx'
 import { Login } from './views/Login.tsx'
@@ -10,7 +11,7 @@ import { Stopwatch } from './views/Stopwatch.tsx'
 import { Stretching } from './views/Stretching.tsx'
 import { Training } from './views/Training.tsx'
 
-export type View = 'training' | 'new' | 'bodyweight' | 'stretch' | 'records' | 'history'
+export type View = 'training' | 'new' | 'bodyweight' | 'stretch' | 'records' | 'history' | 'account'
 export type Update = (change: (user: User) => User) => void
 
 // New cycle is reached from the Lifts tab, and counts as part of it.
@@ -29,6 +30,11 @@ export interface Ctx {
   go: (view: View, exercise?: string) => void
 }
 
+/** Errors as shown, with a plain message when the phone has no connection. */
+function describe(e: unknown): string {
+  return navigator.onLine ? String(e) : 'No connection. Rautaloki needs the internet, try again when online.'
+}
+
 export function App() {
   const [me, setMe] = useState<Me | null>()
   const [ref, setRef] = useState<Reference>()
@@ -44,7 +50,7 @@ export function App() {
   useEffect(() => {
     getMe()
       .then(setMe)
-      .catch((e) => setError(String(e)))
+      .catch((e) => setError(describe(e)))
   }, [])
 
   const load = useCallback(async (id: string) => {
@@ -56,7 +62,7 @@ export function App() {
   // A lost session (cookie cleared, user removed) drops back to the login screen.
   const fail = useCallback((e: unknown) => {
     if (e instanceof LoggedOutError) setMe(null)
-    else setError(String(e))
+    else setError(describe(e))
   }, [])
 
   useEffect(() => {
@@ -116,7 +122,9 @@ export function App() {
       <header>
         <img className="logo" src="/favicon.png" alt="" />
         <h1>Rautaloki</h1>
-        <span className="who">{me.name}</span>
+        <button className={`who link ${view === 'account' ? 'active' : ''}`} onClick={() => go('account')} title="Account">
+          {me.name}
+        </button>
         <span className={`saving ${saving ? 'on' : ''}`} aria-live="polite">
           {saving ? 'Saving…' : ''}
         </span>
@@ -157,6 +165,15 @@ export function App() {
           <BodyWeight data={ref} user={user} update={update} go={go} />
         ) : view === 'stretch' ? (
           <Stretching data={ref} user={user} update={update} go={go} />
+        ) : view === 'account' ? (
+          <Account
+            user={user}
+            onSignOut={signOut}
+            onDeleted={() => {
+              setUser(undefined)
+              setMe(null)
+            }}
+          />
         ) : view === 'records' ? (
           <Records data={ref} user={user} update={update} go={go} />
         ) : (

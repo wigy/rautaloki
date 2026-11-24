@@ -9,6 +9,7 @@
 //   GET  /api/reference     catalog, programs, weight tables
 //   GET  /api/users/:id     own cycles only (ETag header = version)
 //   PUT  /api/users/:id     replace them; send If-Match with the ETag, 412 if stale
+//   DELETE /api/users/:id   {password} -> deletes the user and all their data, logs out
 //
 // Passwords are in data/passwords.json, never sent to the client, and set for an
 // existing user with `node server/passwd.ts <name>`. The cookie is a signed token
@@ -50,6 +51,8 @@ const types: Record<string, string> = {
   '.png': 'image/png',
   '.ico': 'image/x-icon',
   '.json': 'application/json',
+  '.webmanifest': 'application/manifest+json',
+  '.txt': 'text/plain; charset=utf-8',
 }
 
 function json(res: ServerResponse, status: number, body: unknown, headers: Record<string, string> = {}) {
@@ -156,6 +159,15 @@ async function api(req: IncomingMessage, res: ServerResponse, path: string) {
     const tag = await store.saveUser(m[1], (await body(req)) as never, version)
     console.log(new Date().toISOString(), 'saved', m[1])
     return json(res, 200, { ok: true }, { etag: tag })
+  }
+  if (m && req.method === 'DELETE') {
+    // The password is asked again, so a phone left logged in cannot wipe the account.
+    const { password } = (await body(req)) as { password?: unknown }
+    const hash = (await store.passwords())[m[1]]
+    if (typeof password !== 'string' || !hash || !(await verifyPassword(password, hash))) throw new WrongPassword()
+    await store.deleteUser(m[1])
+    console.log(new Date().toISOString(), 'deleted user', m[1])
+    return json(res, 200, { ok: true }, { 'set-cookie': session(req, '', 0) })
   }
   throw new NotFound()
 }

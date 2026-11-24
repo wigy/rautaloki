@@ -991,3 +991,14 @@ button.confirm-go {
 .session-head .link {
   margin-left: auto;
 }
+
+header .who {
+  font-weight: 600;
+  color: var(--text-2);
+  padding: 0;
+  text-decoration: none;
+}
+
+header .who.active {
+  color: var(--accent);
+}
