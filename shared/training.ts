@@ -1,7 +1,7 @@
 // Training rules, ported from the formulas of the original "Weight Training" sheets
 // (Calculations sheet). Pure functions shared by the UI and the tests.
 
-import type { Cycle, EquipmentKind, Exercise, Load, Program, User, WeightKind, Weights } from './types.ts'
+import type { Cycle, EquipmentKind, Exercise, Load, Program, Span, User, WeightKind, Weights } from './types.ts'
 
 /** Sheets' MROUND(x, 0.5). */
 export function roundHalf(x: number): number {
@@ -126,12 +126,14 @@ export function stepAdjust(cycle: Cycle, program: Program, kind: WeightKind, dir
  * Record a week's result. A score on the test week, or the last week, closes the
  * cycle; the new best is the old one unless the test beat it.
  */
-export function recordScore(cycle: Cycle, program: Program, score: number | '-', today: string): Cycle {
+export function recordScore(cycle: Cycle, program: Program, score: number | '-', today: string, span?: Span): Cycle {
   const week = currentWeek(cycle)
   if (week < 0) throw new Error('cycle has no open week')
   const scores = cycle.scores.map((s, w) => (w === week ? score : s))
   const scored = cycle.scores.map((_, w) => (w === week ? today : (cycle.scored?.[w] ?? null)))
-  const next: Cycle = { ...cycle, scores, scored }
+  // Times are kept only once there is one, so cycles never timed stay as they were.
+  const timed = span || cycle.timed ? cycle.scores.map((_, w) => (w === week ? (span ?? null) : (cycle.timed?.[w] ?? null))) : undefined
+  const next: Cycle = { ...cycle, scores, scored, ...(timed && { timed }) }
   if (isTestWeek(program, week) || week === scores.length - 1) {
     const old = cycle.oldBest ?? 0
     next.newBest = isTestWeek(program, week) && typeof score === 'number' ? Math.max(old, score) : cycle.oldBest
@@ -156,7 +158,8 @@ export function undoScore(cycle: Cycle): Cycle {
   if (last < 0) return cycle
   const scores = cycle.scores.map((s, w) => (w === last ? null : s))
   const scored = cycle.scored?.map((d, w) => (w === last ? null : d))
-  return { ...cycle, scores, ...(scored && { scored }), done: false, finished: null, newBest: null }
+  const timed = cycle.timed?.map((t, w) => (w === last ? null : t))
+  return { ...cycle, scores, ...(scored && { scored }), ...(timed && { timed }), done: false, finished: null, newBest: null }
 }
 
 export function newCycle(exercise: string, program: Program, oldBest: number | null, today: string): Cycle {

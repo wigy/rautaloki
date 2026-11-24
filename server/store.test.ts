@@ -42,5 +42,9 @@ describe('store', () => {
       store.saveUser(u.id, { ...u, sessions: [{ ...session, exercises: [{ id: 'x', reps: 1.5 }] }] }, undefined),
     ).rejects.toBeInstanceOf(Invalid)
     await expect(store.saveUser(u.id, { ...u, sessions: [session, session] }, undefined)).rejects.toBeInstanceOf(Invalid)
+    const span = { start: '2026-11-24T15:00:00.000Z', end: '2026-11-24T15:25:00.000Z' }
+    await store.saveUser(u.id, { ...u, sessions: [{ ...session, span }] }, undefined)
+    for (const bad of [{ start: '2026-11-24', end: '2026-11-24' }, { start: span.end, end: span.start }, { start: span.start }])
+      await expect(store.saveUser(u.id, { ...u, sessions: [{ ...session, span: bad as never }] }, undefined)).rejects.toBeInstanceOf(Invalid)
   })
 })

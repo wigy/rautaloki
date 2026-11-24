@@ -67,6 +67,21 @@ describe('exercise feed', () => {
     expect(events.every((e) => e.status === 'planned' && e.start >= '2026-11-23')).toBe(true)
   })
 
+  it('gives timed workouts their times, and finds them by their day in Helsinki', () => {
+    const span = { start: '2026-11-24T21:40:00.000Z', end: '2026-11-24T22:05:00.000Z' } // 23:40-00:05 in Helsinki
+    const c = cycle({ scores: [59.5, null, null, null, null, null], scored: ['2026-11-25', null, null, null, null, null], timed: [span, null, null, null, null, null] })
+    const session = { ...example.sessions![0], date: '2026-11-25', span }
+    const { events } = exerciseFeed(user([c], [session]), ref, TODAY, '2026-11-25', '2026-11-26')
+    const done = events.filter((e) => e.status === 'done')
+    expect(done.map((e) => [e.title, e.allDay, e.start, e.end])).toEqual([
+      ['Deadlift 59.5 kg', false, span.start, span.end],
+      ['Body weight, Day 1', false, span.start, span.end],
+    ])
+    // It began on the 24th in Helsinki, so a range of the 24th alone finds it too.
+    expect(exerciseFeed(user([c], [session]), ref, TODAY, '2026-11-24', '2026-11-25').events.filter((e) => e.status === 'done')).toHaveLength(2)
+    expect(exerciseFeed(user([c], [session]), ref, TODAY, '2026-11-26', '2026-11-27').events.filter((e) => e.status === 'done')).toHaveLength(0)
+  })
+
   it('lists sessions with the exercises performed', () => {
     const [e] = exerciseFeed(user([], example.sessions!.slice(0, 1)), ref, TODAY).events
     expect(e).toMatchObject({ title: 'Body weight, Day 1', start: '2026-09-07', end: '2026-09-08', kind: 'bodyweight', status: 'done' })

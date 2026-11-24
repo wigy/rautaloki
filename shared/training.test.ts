@@ -120,6 +120,19 @@ describe('recording', () => {
     expect(c).toMatchObject({ done: false, finished: null, newBest: null })
     expect(currentWeek(c)).toBe(4)
   })
+
+  it('keeps when a timed week ran, beside its date, and undo clears it', () => {
+    const span = { start: '2026-10-01T15:00:00.000Z', end: '2026-10-01T15:20:00.000Z' }
+    let c = newCycle('bench-press', p, 50, '2026-10-01')
+    c = recordScore(c, p, 30, '2026-10-01')
+    expect(c.timed).toBeUndefined()
+    c = recordScore(c, p, 31, '2026-10-08', span)
+    expect(c.timed).toEqual([null, span, null, null, null])
+    c = recordScore(c, p, 32, '2026-10-15')
+    expect(c.timed).toEqual([null, span, null, null, null])
+    c = undoScore(undoScore(c))
+    expect(c.timed).toEqual([null, null, null, null, null])
+  })
 })
 
 describe('training week', () => {

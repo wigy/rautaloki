@@ -11,7 +11,7 @@ import {
   today,
   undoScore,
 } from '../../shared/training.ts'
-import type { Cycle, Program } from '../../shared/types.ts'
+import type { Cycle, Program, Span } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import empty from '../assets/empty.webp'
 import { GENERAL, HOWTO } from '../howto.ts'
@@ -65,9 +65,9 @@ function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: b
   const change = (fn: (c: Cycle) => Cycle) =>
     ctx.update((u) => ({ ...u, cycles: u.cycles.map((c) => (c.id === cycle.id ? fn(c) : c)) }))
 
-  const save = (score: number | '-') => {
+  const save = (score: number | '-', span?: Span) => {
     if (!prog) return
-    change((c) => recordScore(c, prog, score, today()))
+    change((c) => recordScore(c, prog, score, today(), span))
   }
   const n = Number(value.replace(',', '.'))
   const valid = value.trim() !== '' && Number.isFinite(n) && n >= 0
@@ -141,9 +141,9 @@ function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: b
               }
               onDone={
                 p.proposal !== null && valid
-                  ? () => {
+                  ? (span) => {
                       setTiming(false)
-                      save(n)
+                      save(n, span)
                     }
                   : undefined
               }

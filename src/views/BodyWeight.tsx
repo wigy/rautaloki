@@ -22,7 +22,7 @@ import {
   stepWork,
 } from '../../shared/sessions.ts'
 import { today } from '../../shared/training.ts'
-import type { Performed, Session } from '../../shared/types.ts'
+import type { Performed, Session, Span } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import { exerciseIcon } from '../icons.ts'
 import { fmtDate } from '../lookup.ts'
@@ -65,8 +65,8 @@ function DayCard({ ctx, day, sessions, doneNow }: { ctx: Ctx; day: BwDay; sessio
   const plan = useMemo(() => bwPlan(day, work), [day, work])
   const last = lastOf(sessions, day.id)
 
-  const save = (exercises: Performed[]) => {
-    ctx.update((u) => addSession(u, newSession(u, 'bodyweight', day.id, today(), work, exercises)))
+  const save = (exercises: Performed[], span?: Span) => {
+    ctx.update((u) => addSession(u, newSession(u, 'bodyweight', day.id, today(), work, exercises, span)))
     setTiming(false)
     setLogging(false)
   }
@@ -135,13 +135,13 @@ function DayCard({ ctx, day, sessions, doneNow }: { ctx: Ctx; day: BwDay; sessio
                 {level}
               </>
             }
-            finish={(done) => (
+            finish={(done, span) => (
               <>
                 <div className="timer-phase">Done</div>
                 <BwEntry
                   sessions={sessions}
                   exercises={done.map((i) => day.exercises[i])}
-                  onSave={save}
+                  onSave={(performed) => save(performed, span)}
                   onCancel={() => setTiming(false)}
                 />
               </>

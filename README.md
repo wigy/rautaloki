@@ -82,13 +82,17 @@ all-day calendar events for [planner](https://github.com/wigy/planner)'s Exercis
 planner, which sends it as `Authorization: Bearer <key>`. Without the key, or for an email
 that is not linked, the answer is 404.
 
-- a lift result with its entry date: that day, done
+- a lift result with its entry date: that day, or the time it ran if done through the timer
 - results without a date (the history from the sheets): one event over the finished cycle
 - the weeks an unfinished cycle has left: one Monday-Sunday event per program week from
   this week on (from next week if the cycle already had an entry this week), planned, with
   this week's proposal or later weeks' plan × the best performance so far; TEST weeks
   carry no weight
-- body weight and stretching sessions: their day, done; skipped weeks are left out
+- body weight and stretching sessions: their day, or the time they ran if done through the
+  timer; skipped weeks are left out
+
+An event has `allDay`: when true, `start` and `end` are dates (`end` exclusive), otherwise
+ISO instants.
 
 ### Docker
 
@@ -126,13 +130,15 @@ writer, so run one instance only.
 
 A cycle stores `scores`, one per program week: kg lifted, `"-"` for a skipped
 week, `null` for not done yet, and beside them `scored`, the date each one was
-entered (missing in data from before it was kept). Records, improvements and the next proposal are
+entered (missing in data from before it was kept), and `timed`, when each week ran as a
+`{start, end}` of ISO instants, for the weeks done through the timer (null otherwise). Records, improvements and the next proposal are
 derived from these, never stored. Saves carry the file's ETag (`If-Match`), so a
 stale tab gets a 412 instead of overwriting another device's entry.
 
 Body weight and stretching sessions are kept beside the cycles as `sessions`: the date, the
 day or routine, its seconds (work per interval, or seconds per hold) and the exercises
-actually performed, each with the repeats counted over all rounds or `null`. Their
+actually performed, each with the repeats counted over all rounds or `null`, and `span`,
+when it ran, if it was done through the timer. Their
 exercises, days and routines are fixed in code (`shared/bodyweight.ts`,
 `shared/stretching.ts`), so they need no file in `data/`.
 

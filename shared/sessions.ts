@@ -4,7 +4,7 @@
 import { BW_WORK_MAX, BW_WORK_MIN, BW_WORK_STEP } from './bodyweight.ts'
 import { HOLD_DEFAULT, HOLD_MAX, HOLD_MIN, HOLD_STEP } from './stretching.ts'
 import { weekStart } from './training.ts'
-import type { Performed, Session, User } from './types.ts'
+import type { Performed, Session, Span, User } from './types.ts'
 
 export function sessionsOf(user: User, kind: Session['kind']): Session[] {
   return (user.sessions ?? []).filter((s) => s.kind === kind)
@@ -64,12 +64,13 @@ export function newSession(
   date: string,
   seconds: number,
   exercises: Performed[],
+  span?: Span,
 ): Session {
   const ids = new Set((user.sessions ?? []).map((s) => s.id))
   const base = `${date}-${plan}`
   let id = base
   for (let n = 2; ids.has(id); n++) id = `${base}-${n}`
-  return { id, kind, plan, date, seconds, exercises }
+  return { id, kind, plan, date, seconds, exercises, ...(span && { span }) }
 }
 
 export function addSession(user: User, session: Session): User {

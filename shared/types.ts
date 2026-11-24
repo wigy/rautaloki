@@ -43,6 +43,12 @@ export type Weights = Record<EquipmentKind, WeightKind>
 /** A score is the kg lifted that week, "-" for a skipped week, null for not yet done. */
 export type Score = number | '-' | null
 
+/** When a workout ran, as ISO instants (UTC). Recorded only for workouts done through a timer. */
+export interface Span {
+  start: string
+  end: string
+}
+
 /** One run of a program on one exercise. */
 export interface Cycle {
   id: string
@@ -54,6 +60,8 @@ export interface Cycle {
   scores: Score[]
   /** Date (YYYY-MM-DD) each week's score was entered, parallel to scores. Missing in older data. */
   scored?: (string | null)[]
+  /** When each week's lifting ran, parallel to scores; null where not timed. Missing in older data. */
+  timed?: (Span | null)[]
   /** Manual kg adjustment added to the proposed weight. */
   add: number
   done: boolean
@@ -91,6 +99,8 @@ export interface Session {
   seconds: number
   /** The exercises actually performed, in order. */
   exercises: Performed[]
+  /** When the session ran, if it was done through the timer. */
+  span?: Span
 }
 
 export interface Reference {

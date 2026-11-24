@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import type { Interval } from '../../shared/intervals.ts'
+import type { Span } from '../../shared/types.ts'
 import { FINISHED, say, useWakeLock } from '../speech.ts'
 import { InfoArt } from './HowToInfo.tsx'
 import { fmt, STALE } from './SetTimer.tsx'
@@ -16,8 +17,8 @@ interface Props {
   howTo?: (item: number) => ReactNode
   /** Shown before the start, above the Start button: settings such as the level. */
   setup?: ReactNode
-  /** The final screen, given the indices of the exercises that were performed. */
-  finish: (performed: number[]) => ReactNode
+  /** The final screen, given the indices of the exercises that were performed and when the run was. */
+  finish: (performed: number[], span: Span) => ReactNode
   onClose: () => void
 }
 
@@ -29,6 +30,8 @@ export function IntervalTimer({ plan, title, subtitle, labels, picture, howTo, s
   const run = useRef({ i: 0, start: 0, paused: null as number | null, fired: 0, running: false, done: new Set<number>() })
   const [now, setNow] = useState(() => performance.now())
   const [over, setOver] = useState(false)
+  // Wall-clock start and end of the run, for the training log.
+  const span = useRef<Span>({ start: '', end: '' })
   useWakeLock()
 
   const r = run.current
@@ -44,6 +47,7 @@ export function IntervalTimer({ plan, title, subtitle, labels, picture, howTo, s
     Object.assign(r, { i, start, fired: 0 })
     if (i >= plan.length) {
       r.running = false
+      span.current.end = new Date().toISOString()
       say(FINISHED)
       setOver(true)
     }
@@ -77,6 +81,7 @@ export function IntervalTimer({ plan, title, subtitle, labels, picture, howTo, s
   const start = () => {
     // Speak from the tap itself: mobile browsers only allow speech that starts from a user gesture.
     say(plan[0].cues[0]?.say ?? '')
+    span.current = { start: new Date().toISOString(), end: '' }
     Object.assign(r, { i: 0, start: performance.now(), paused: null, fired: 1, running: true, done: new Set() })
     setNow(performance.now())
   }
@@ -101,6 +106,7 @@ export function IntervalTimer({ plan, title, subtitle, labels, picture, howTo, s
   const end = () => {
     leave(r.paused ?? performance.now())
     r.running = false
+    span.current.end = new Date().toISOString()
     window.speechSynthesis?.cancel()
     setOver(true)
   }
@@ -123,7 +129,10 @@ export function IntervalTimer({ plan, title, subtitle, labels, picture, howTo, s
   const total = plan.reduce((n, s) => n + s.duration, 0)
   let body
   if (over) {
-    body = finish([...r.done].sort((a, b) => a - b))
+    body = finish(
+      [...r.done].sort((a, b) => a - b),
+      { ...span.current },
+    )
   } else if (!r.running) {
     body = (
       <>

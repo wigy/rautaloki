@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { type Segment, stepTempo, tempoPercent } from '../../shared/timer.ts'
+import type { Span } from '../../shared/types.ts'
 import { FINISHED, say, useWakeLock } from '../speech.ts'
 import { InfoArt } from './HowToInfo.tsx'
 
@@ -14,8 +15,8 @@ interface Props {
   /** Factor on the seconds per repeat for this exercise, changeable also while running. */
   tempo: number
   onTempo: (tempo: number) => void
-  /** Records the result from the done screen, like the card's Done; without it the screen only closes. */
-  onDone?: () => void
+  /** Records the result from the done screen, like the card's Done, with when the sets ran; without it the screen only closes. */
+  onDone?: (span: Span) => void
   onClose: () => void
 }
 
@@ -26,6 +27,8 @@ export const STALE = 2
 export function SetTimer({ segments, title, icon, howTo, scheme, weight, tempo, onTempo, onDone, onClose }: Props) {
   // Timing lives in a ref so the interval reads current values; `now` only drives rendering.
   const run = useRef({ i: 0, start: 0, paused: null as number | null, fired: 0, running: false })
+  // Wall-clock start and end of the whole run, for the training log.
+  const span = useRef<{ start?: string; end?: string }>({})
   const [now, setNow] = useState(() => performance.now())
   useWakeLock()
 
@@ -37,6 +40,7 @@ export function SetTimer({ segments, title, icon, howTo, scheme, weight, tempo, 
     Object.assign(run.current, { i, start, fired: 0 })
     if (i >= segments.length) {
       run.current.running = false
+      span.current.end = new Date().toISOString()
       say(FINISHED)
     }
   }
@@ -79,6 +83,7 @@ export function SetTimer({ segments, title, icon, howTo, scheme, weight, tempo, 
   const start = () => {
     // Speak from the tap itself: mobile browsers only allow speech that starts from a user gesture.
     say(segments[0].cues[0]?.say ?? '')
+    span.current = { start: new Date().toISOString() }
     Object.assign(run.current, { i: 0, start: performance.now(), paused: null, fired: 1, running: true })
     setNow(performance.now())
   }
@@ -172,7 +177,15 @@ export function SetTimer({ segments, title, icon, howTo, scheme, weight, tempo, 
       <>
         <div className="timer-phase">Done</div>
         <div className="timer-big">✓</div>
-        <button className="primary timer-main" onClick={onDone ?? onClose}>
+        <button
+          className="primary timer-main"
+          onClick={() => {
+            const { start, end } = span.current
+            if (!onDone) return onClose()
+            const now = new Date().toISOString()
+            onDone({ start: start ?? now, end: end ?? now })
+          }}
+        >
           {onDone ? 'Done' : 'Close'}
         </button>
       </>

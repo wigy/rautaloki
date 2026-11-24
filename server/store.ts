@@ -150,6 +150,11 @@ export class Invalid extends Error {}
 const isScore = (s: unknown) => s === null || s === '-' || (typeof s === 'number' && s >= 0)
 const isNum = (n: unknown) => n === null || typeof n === 'number'
 const isDate = (d: unknown) => d === null || (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d))
+const isInstant = (t: unknown) => typeof t === 'string' && /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(t) && !Number.isNaN(Date.parse(t))
+const isSpan = (s: unknown) => {
+  const x = s as { start?: unknown; end?: unknown } | null
+  return !!x && isInstant(x.start) && isInstant(x.end) && (x.end as string) >= (x.start as string)
+}
 
 function validateUser(user: User, id: string): void {
   const fail = (msg: string) => {
@@ -167,6 +172,9 @@ function validateUser(user: User, id: string): void {
     const scored = c.scored
     if (scored !== undefined && (!Array.isArray(scored) || scored.length !== c.scores.length || !scored.every(isDate)))
       fail(`${at}: scored`)
+    const timed = c.timed
+    if (timed !== undefined && (!Array.isArray(timed) || timed.length !== c.scores.length || !timed.every((t) => t === null || isSpan(t))))
+      fail(`${at}: timed`)
     if (!isNum(c.oldBest) || !isNum(c.newBest) || typeof c.add !== 'number') fail(`${at}: numbers`)
     if (!isDate(c.started) || !isDate(c.finished)) fail(`${at}: dates`)
     if (typeof c.done !== 'boolean') fail(`${at}: done`)
@@ -189,6 +197,7 @@ function validateUser(user: User, id: string): void {
       const okPerformed = (p: Performed) =>
         p && typeof p.id === 'string' && (p.reps === null || (Number.isInteger(p.reps) && p.reps >= 0))
       if (!Array.isArray(s.exercises) || !s.exercises.every(okPerformed)) fail(`${at}: exercises`)
+      if (s.span !== undefined && !isSpan(s.span)) fail(`${at}: span`)
     })
   }
 }

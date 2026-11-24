@@ -13,7 +13,7 @@ import {
   stretch,
 } from '../../shared/stretching.ts'
 import { today } from '../../shared/training.ts'
-import type { Session } from '../../shared/types.ts'
+import type { Session, Span } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
 import { stretchIcon } from '../icons.ts'
 import { fmtDate } from '../lookup.ts'
@@ -67,10 +67,10 @@ function RoutineCard({
   const last = lastOf(sessions, routine.id)
 
   // A dynamic routine has no hold to choose; its seconds record the length of a move.
-  const save = (done: string[]) => {
+  const save = (done: string[], span?: Span) => {
     const seconds = dynamic ? DYNAMIC_MOVE : hold
     ctx.update((u) =>
-      addSession(u, newSession(u, 'stretch', routine.id, today(), seconds, done.map((id) => ({ id, reps: null })))),
+      addSession(u, newSession(u, 'stretch', routine.id, today(), seconds, done.map((id) => ({ id, reps: null })), span)),
     )
     setTiming(false)
   }
@@ -136,10 +136,10 @@ function RoutineCard({
                 {holdControl}
               </>
             }
-            finish={(done) => (
+            finish={(done, span) => (
               <StretchDone
                 done={done.map((i) => routine.stretches[i])}
-                onSave={save}
+                onSave={(d) => save(d, span)}
                 onCancel={() => setTiming(false)}
               />
             )}

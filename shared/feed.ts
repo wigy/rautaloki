@@ -1,7 +1,8 @@
 // The exercise feed: a user's training as calendar events, for planner's Exercises calendar.
 //
-// All events are all-day, since only dates are stored:
-// - a lift result with its entry date: a day event, done
+// Events are all-day where only a date is stored, and timed where the workout was done
+// through a timer, which records when it started and ended:
+// - a lift result with its entry date: that day, or the time it ran, done
 // - lift results without a date (history imported from the sheets): one event over a
 //   finished cycle, from its start to its finish, done; an unfinished cycle's undated
 //   results are left out, as it may have started years ago
@@ -9,21 +10,23 @@
 //   week, this week first (next week if the cycle already had an entry this week), planned.
 //   This week shows the proposal as loaded; later weeks the plan corrected by the best
 //   performance so far, which is what the proposal will be if that holds; TEST no weight
-// - a body weight or stretching session: a day event, done
+// - a body weight or stretching session: its day, or the time it ran, done
 // Skipped weeks ("-") are left out.
 
 import { bwDay, bwExercise } from './bodyweight.ts'
 import { stretch, routine } from './stretching.ts'
-import { bestPerformance, currentWeek, doneThisWeek, isTestWeek, plan, roundHalf, target, weekStart } from './training.ts'
-import type { Cycle, Reference, User } from './types.ts'
+import { bestPerformance, currentWeek, doneThisWeek, isTestWeek, plan, roundHalf, target, today, weekStart } from './training.ts'
+import type { Cycle, Reference, Span, User } from './types.ts'
 
 export interface FeedEvent {
   /** Stable across fetches. */
   id: string
   title: string
-  /** YYYY-MM-DD, the first day. */
+  /** All-day: start and end are dates. Otherwise they are ISO instants (UTC). */
+  allDay: boolean
+  /** YYYY-MM-DD, the first day; or an ISO instant when not all-day. */
   start: string
-  /** YYYY-MM-DD, the day after the last one (exclusive, as in iCalendar). */
+  /** YYYY-MM-DD, the day after the last one (exclusive, as in iCalendar); or an ISO instant. */
   end: string
   status: 'done' | 'planned'
   kind: 'lift' | 'cycle' | 'bodyweight' | 'stretch'
@@ -43,6 +46,19 @@ export function addDays(date: string, days: number): string {
 
 const kg = (n: number) => `${n} kg`
 
+/** The times it ran when known, otherwise the whole day. */
+function when(date: string, span: Span | null | undefined): Pick<FeedEvent, 'allDay' | 'start' | 'end'> {
+  return span ? { allDay: false, start: span.start, end: span.end } : { allDay: true, start: date, end: addDays(date, 1) }
+}
+
+/** The days an event touches, [first, after last), in TIME_ZONE. */
+function days(e: FeedEvent): [string, string] {
+  if (e.allDay) return [e.start, e.end]
+  const first = today(new Date(e.start))
+  const last = today(new Date(e.end))
+  return [first, addDays(last, 1)]
+}
+
 function cycleEvents(cycle: Cycle, ref: Reference, today: string): FeedEvent[] {
   const program = ref.programs.find((p) => p.id === cycle.program)
   const exercise = ref.catalog.find((e) => e.id === cycle.exercise)
@@ -60,11 +76,11 @@ function cycleEvents(cycle: Cycle, ref: Reference, today: string): FeedEvent[] {
       return
     }
     const scheme = program.weeks[w]?.scheme ?? ''
+    const span = cycle.timed?.[w]
     out.push({
       id: `${cycle.id}/${w}`,
       title: `${name} ${isTestWeek(program, w) ? 'test ' : ''}${kg(score)}`,
-      start: date,
-      end: addDays(date, 1),
+      ...when(date, span),
       status: 'done',
       kind: 'lift',
       description: `${program.name}, week ${w + 1}/${weeks}: ${scheme}`,
@@ -77,6 +93,7 @@ function cycleEvents(cycle: Cycle, ref: Reference, today: string): FeedEvent[] {
     out.push({
       id: `${cycle.id}/cycle`,
       title: `${name}: ${program.name}`,
+      allDay: true,
       start: cycle.started,
       end: addDays(last < cycle.started ? cycle.started : last, 1),
       status: 'done',
@@ -104,6 +121,7 @@ function cycleEvents(cycle: Cycle, ref: Reference, today: string): FeedEvent[] {
       out.push({
         id: `${cycle.id}/${w}`,
         title: `${name} ${scheme}${load === null ? '' : ` · ${kg(load)}`}`,
+        allDay: true,
         start: monday,
         end: addDays(monday, 7),
         status: 'planned',
@@ -130,8 +148,7 @@ function sessionEvents(user: User): FeedEvent[] {
     return {
       id: `session/${s.id}`,
       title,
-      start: s.date,
-      end: addDays(s.date, 1),
+      ...when(s.date, s.span),
       status: 'done' as const,
       kind: s.kind,
       description: what,
@@ -142,7 +159,10 @@ function sessionEvents(user: User): FeedEvent[] {
 /** The user's events overlapping [from, to) (YYYY-MM-DD, either open), by start date. */
 export function exerciseFeed(user: User, ref: Reference, today: string, from?: string, to?: string): Feed {
   const events = [...user.cycles.flatMap((c) => cycleEvents(c, ref, today)), ...sessionEvents(user)]
-    .filter((e) => (!to || e.start < to) && (!from || e.end > from))
+    .filter((e) => {
+      const [first, after] = days(e)
+      return (!to || first < to) && (!from || after > from)
+    })
     .sort((a, b) => a.start.localeCompare(b.start) || a.id.localeCompare(b.id))
   return { name: 'Exercises', events }
 }
