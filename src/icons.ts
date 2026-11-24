@@ -15,3 +15,5 @@ const slug = (s: string) =>
 
 export const muscleIcon = (muscle: string) => byName.get(`muscle-${slug(muscle)}`)
 export const exerciseIcon = (id: string) => byName.get(`ex-${id}`)
+/** Body weight exercises use ex-<id> like the catalog; stretches have stretch-<id>.webp. */
+export const stretchIcon = (id: string) => byName.get(`stretch-${id}`)

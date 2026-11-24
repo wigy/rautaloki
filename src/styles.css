@@ -221,7 +221,7 @@ label > select {
 
 /* Trained this week: dimmed but fully usable. Only the card's own content is dimmed,
    not the full-screen timer that lives inside it. */
-.card.week-done :is(.card-title, .weeks, .plan > :not(.timer), .card-actions, .howto) {
+.card.week-done :is(.card-title, .weeks, .bw-list, .plan > :not(.timer), .card-actions, .howto) {
   opacity: 0.5;
 }
 
@@ -895,12 +895,44 @@ button.confirm-go {
 }
 
 .bw-list {
+  list-style: none;
   margin: 8px 0;
-  padding-left: 22px;
+  padding: 0;
 }
 
 .bw-list li {
-  margin: 2px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
+}
+
+.list-art {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.howto-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.howto-art {
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin-top: 12px;
+}
+
+.interval-art {
+  width: min(42vw, 170px);
+  aspect-ratio: 1;
+  border-radius: 14px;
+  margin-bottom: 4px;
 }
 
 .interval-title {

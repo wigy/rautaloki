@@ -9,6 +9,8 @@ interface Props {
   subtitle: string
   /** What the phases are called, e.g. work "Hold" and rest "Change" for stretching. */
   labels: { work: string; rest: string }
+  /** Picture of the exercise at an index of the plan's list. */
+  picture?: (item: number) => string | undefined
   /** Shown before the start, above the Start button: settings such as the level. */
   setup?: ReactNode
   /** The final screen, given the indices of the exercises that were performed. */
@@ -20,7 +22,7 @@ interface Props {
 const PERFORMED = 3
 
 /** Full-screen timer that runs an interval plan, speaks its cues and tracks what was done. */
-export function IntervalTimer({ plan, title, subtitle, labels, setup, finish, onClose }: Props) {
+export function IntervalTimer({ plan, title, subtitle, labels, picture, setup, finish, onClose }: Props) {
   const run = useRef({ i: 0, start: 0, paused: null as number | null, fired: 0, running: false, done: new Set<number>() })
   const [now, setNow] = useState(() => performance.now())
   const [over, setOver] = useState(false)
@@ -132,8 +134,10 @@ export function IntervalTimer({ plan, title, subtitle, labels, setup, finish, on
     const left = Math.max(0, seg.duration - elapsed)
     const next = seg.kind === 'work' ? plan.slice(r.i + 1).find((s) => s.kind === 'work' && s.item !== seg.item) : null
     const tone = seg.kind === 'work' ? 'lift' : seg.kind
+    const art = picture?.(seg.item)
     body = (
       <>
+        {art && <img className="interval-art" src={art} alt="" />}
         <div className={`timer-phase ${tone}`}>
           {seg.kind === 'ready' ? 'Get ready' : seg.kind === 'work' ? labels.work : labels.rest}
         </div>

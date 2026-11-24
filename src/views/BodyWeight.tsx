@@ -24,7 +24,9 @@ import {
 import { today } from '../../shared/training.ts'
 import type { Performed, Session } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
+import { exerciseIcon } from '../icons.ts'
 import { fmtDate } from '../lookup.ts'
+import { HowToItem, ListItem } from './HowToItem.tsx'
 import { IntervalTimer } from './IntervalTimer.tsx'
 import { SessionList } from './Sessions.tsx'
 
@@ -93,23 +95,20 @@ function DayCard({ ctx, day, sessions, doneNow }: { ctx: Ctx; day: BwDay; sessio
           <span className="muted">{last ? `last ${fmtDate(last.date)} at ${bwLevel(last.seconds)}` : 'not done yet'}</span>
         </div>
       </div>
-      <ol className="bw-list">
+      <ul className="bw-list">
         {day.exercises.map((id) => {
           const ex = bwExercise(id)
           const prev = ex.hold ? null : lastReps(sessions, id)
           return (
-            <li key={id}>
-              {ex.name}
-              {prev && (
-                <span className="muted small">
-                  {' '}
-                  {prev.reps} at {bwLevel(prev.seconds)}
-                </span>
-              )}
-            </li>
+            <ListItem
+              key={id}
+              name={ex.name}
+              icon={exerciseIcon(id)}
+              note={prev ? `${prev.reps} at ${bwLevel(prev.seconds)}` : undefined}
+            />
           )
         })}
-      </ol>
+      </ul>
       <div className="plan">
         {level}
         <button type="button" className="exercise-now" onClick={() => setTiming(true)}>
@@ -122,6 +121,7 @@ function DayCard({ ctx, day, sessions, doneNow }: { ctx: Ctx; day: BwDay; sessio
             title={`Body weight, ${day.name}`}
             subtitle={`${bwLevel(work)} · ${BW_ROUNDS} rounds`}
             labels={{ work: 'Work', rest: 'Rest' }}
+            picture={(i) => exerciseIcon(day.exercises[i])}
             setup={
               <>
                 <div className="timer-phase">{bwLevel(work)}</div>
@@ -163,21 +163,7 @@ function DayCard({ ctx, day, sessions, doneNow }: { ctx: Ctx; day: BwDay; sessio
         <div className="settings howto">
           {day.exercises.map((id) => {
             const ex = bwExercise(id)
-            return (
-              <div key={id}>
-                <h3>{ex.name}</h3>
-                <ol>
-                  {ex.steps.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ol>
-                <ul>
-                  {ex.watch.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
-              </div>
-            )
+            return <HowToItem key={id} name={ex.name} icon={exerciseIcon(id)} steps={ex.steps} watch={ex.watch} />
           })}
           <h3>Every session</h3>
           <ul>

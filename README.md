@@ -5,7 +5,7 @@ weekly schemes (e.g. *Original*: 4 × "10 x 10", 2 × "2 x MAX", 3 × "4 x 10", 
 run from the exercise's **old best**, ending in a test week that sets the new best.
 
 <p>
-  <img src="docs/screenshots/training.webp" width="260" alt="Training: this week's weight and plates per cycle">
+  <img src="docs/screenshots/training.webp" width="260" alt="Lifts: this week's weight and plates per cycle">
   <img src="docs/screenshots/timer.webp" width="260" alt="Spoken set timer during a lift">
   <img src="docs/screenshots/how-to.webp" width="260" alt="Form instructions on the training card">
 </p>
@@ -13,6 +13,16 @@ run from the exercise's **old best**, ending in a test week that sets the new be
   <img src="docs/screenshots/new-cycle.webp" width="260" alt="New cycle: picking the muscle group">
   <img src="docs/screenshots/history.webp" width="260" alt="History of one exercise with its best over time">
   <img src="docs/screenshots/records.webp" width="260" alt="Records by muscle group">
+</p>
+<p>
+  <img src="docs/screenshots/body.webp" width="260" alt="Body weight days with the last repeats per exercise">
+  <img src="docs/screenshots/bodyweight-timer.webp" width="260" alt="Body weight interval timer during work">
+  <img src="docs/screenshots/bodyweight-how-to.webp" width="260" alt="Pictured how-to of a body weight day">
+</p>
+<p>
+  <img src="docs/screenshots/stretch.webp" width="260" alt="A static stretching routine">
+  <img src="docs/screenshots/stretching.webp" width="260" alt="Stretching timer during a hold">
+  <img src="docs/screenshots/stopwatch.webp" width="260" alt="Stopwatch that calls out the minutes">
 </p>
 
 Screenshots show the made-up example user from `fixtures/`.
@@ -136,6 +146,8 @@ and the next exercise is called by name. An exercise counts as performed once it
 has run 3 s; at the end the repeats of each performed one can be entered (optional, none
 for holds), and *Save* stores the session. *Log without timer* records one by hand.
 A day done this week goes below the others, dimmed and ticked, as cycles do.
+Every exercise has a picture (`src/assets/icons/ex-bw-*.webp`), shown in the list, the
+how-to and the timer.
 
 ## Stretching
 
@@ -147,6 +159,9 @@ The *Stretch* tab has guided routines (`shared/stretching.ts`), following the us
 - **Full body** and **Hips and back**: static stretches after training or on a rest day,
   held at mild tension, 2 holds per side alternating sides, so about 60 s per muscle group
   at the default 30 s hold (15-60 s with − / +). At least 2-3 days a week; daily is best.
+
+Each stretch has a picture (`src/assets/icons/stretch-<id>.webp`) in the list, the how-to
+and the timer.
 
 Sources: ACSM's [stretching and flexibility guidelines](https://www.acsm.org/blog-detail/acsm-certified-blog/2021/03/18/stretching-and-flexibility-guidelines-update),
 Simic et al. 2013, [Does pre-exercise static stretching inhibit maximal muscular performance?](https://pubmed.ncbi.nlm.nih.gov/22316148/),

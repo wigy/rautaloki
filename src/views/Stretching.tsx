@@ -15,8 +15,10 @@ import {
 import { today } from '../../shared/training.ts'
 import type { Session } from '../../shared/types.ts'
 import type { Ctx } from '../App.tsx'
+import { stretchIcon } from '../icons.ts'
 import { fmtDate } from '../lookup.ts'
 import { PlayIcon } from './BodyWeight.tsx'
+import { HowToItem, ListItem } from './HowToItem.tsx'
 import { IntervalTimer } from './IntervalTimer.tsx'
 import { SessionList } from './Sessions.tsx'
 
@@ -101,17 +103,12 @@ function RoutineCard({
         </div>
       </div>
       <p className="small">{routine.about}</p>
-      <ol className="bw-list">
+      <ul className="bw-list">
         {routine.stretches.map((id) => {
           const s = stretch(id)
-          return (
-            <li key={id}>
-              {s.name}
-              <span className="muted small"> {s.target}</span>
-            </li>
-          )
+          return <ListItem key={id} name={s.name} icon={stretchIcon(id)} note={s.target} />
         })}
-      </ol>
+      </ul>
       <div className="plan">
         {holdControl}
         <button type="button" className="exercise-now" onClick={() => setTiming(true)}>
@@ -124,6 +121,7 @@ function RoutineCard({
             title={routine.name}
             subtitle={dynamic ? `Dynamic · about ${minutes} min` : `Hold ${hold} s · about ${minutes} min`}
             labels={dynamic ? { work: 'Move', rest: 'Next' } : { work: 'Hold', rest: 'Change' }}
+            picture={(i) => stretchIcon(routine.stretches[i])}
             setup={
               <>
                 <div className="timer-phase">{routine.name}</div>
@@ -158,22 +156,13 @@ function RoutineCard({
           {routine.stretches.map((id) => {
             const s = stretch(id)
             return (
-              <div key={id}>
-                <h3>
-                  {s.name}
-                  {s.sides ? ', each side' : ''}
-                </h3>
-                <ol>
-                  {s.steps.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ol>
-                <ul>
-                  {s.watch.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
-              </div>
+              <HowToItem
+                key={id}
+                name={s.sides ? `${s.name}, each side` : s.name}
+                icon={stretchIcon(id)}
+                steps={s.steps}
+                watch={s.watch}
+              />
             )
           })}
           <h3>Every session</h3>

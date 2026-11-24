@@ -8,7 +8,14 @@
       "program": "5-x-5",
       "started": "2026-09-01",
       "oldBest": 72.5,
-      "scores": [59.5, 61, null, null, null, null],
+      "scores": [
+        59.5,
+        61,
+        null,
+        null,
+        null,
+        null
+      ],
       "add": 0,
       "done": false,
       "finished": null,
@@ -20,7 +27,14 @@
       "program": "short-original",
       "started": "2026-09-02",
       "oldBest": 16,
-      "scores": [3.5, null, null, null, null, null],
+      "scores": [
+        3.5,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
       "add": 0,
       "done": false,
       "finished": null,
@@ -32,7 +46,18 @@
       "program": "original",
       "started": "2026-09-03",
       "oldBest": 26,
-      "scores": [7, null, null, null, null, null, null, null, null, null],
+      "scores": [
+        7,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
       "add": 0,
       "done": false,
       "finished": null,
@@ -44,7 +69,18 @@
       "program": "original",
       "started": "2025-10-22",
       "oldBest": 27,
-      "scores": [17, 17, 19, 21, 26, 27, 27, 27, "-", 39.5],
+      "scores": [
+        17,
+        17,
+        19,
+        21,
+        26,
+        27,
+        27,
+        27,
+        "-",
+        39.5
+      ],
       "add": 0,
       "done": true,
       "finished": "2025-12-09",
@@ -56,11 +92,148 @@
       "program": "original",
       "started": "2026-01-15",
       "oldBest": 39.5,
-      "scores": [23, 23, 23, 23.5, 33.5, 33.5, 31.5, 31.5, 31.5, 46],
+      "scores": [
+        23,
+        23,
+        23,
+        23.5,
+        33.5,
+        33.5,
+        31.5,
+        31.5,
+        31.5,
+        46
+      ],
       "add": 0,
       "done": true,
       "finished": "2026-03-01",
       "newBest": 46
+    }
+  ],
+  "sessions": [
+    {
+      "id": "2026-09-07-bw-day-1",
+      "kind": "bodyweight",
+      "plan": "bw-day-1",
+      "date": "2026-09-07",
+      "seconds": 35,
+      "exercises": [
+        {
+          "id": "bw-plank",
+          "reps": null
+        },
+        {
+          "id": "bw-lunge",
+          "reps": 42
+        },
+        {
+          "id": "bw-push-up",
+          "reps": 27
+        },
+        {
+          "id": "bw-star-jump",
+          "reps": 66
+        }
+      ]
+    },
+    {
+      "id": "2026-09-09-bw-day-2",
+      "kind": "bodyweight",
+      "plan": "bw-day-2",
+      "date": "2026-09-09",
+      "seconds": 35,
+      "exercises": [
+        {
+          "id": "bw-left-side-plank",
+          "reps": null
+        },
+        {
+          "id": "bw-right-side-plank",
+          "reps": null
+        },
+        {
+          "id": "bw-squat-jump",
+          "reps": 30
+        },
+        {
+          "id": "bw-burpee",
+          "reps": 18
+        }
+      ]
+    },
+    {
+      "id": "2026-09-10-full-body",
+      "kind": "stretch",
+      "plan": "full-body",
+      "date": "2026-09-10",
+      "seconds": 30,
+      "exercises": [
+        {
+          "id": "calf",
+          "reps": null
+        },
+        {
+          "id": "standing-quad",
+          "reps": null
+        },
+        {
+          "id": "hamstring",
+          "reps": null
+        },
+        {
+          "id": "hip-flexor",
+          "reps": null
+        },
+        {
+          "id": "figure-four",
+          "reps": null
+        },
+        {
+          "id": "butterfly",
+          "reps": null
+        },
+        {
+          "id": "childs-pose",
+          "reps": null
+        },
+        {
+          "id": "doorway-chest",
+          "reps": null
+        },
+        {
+          "id": "cross-body-shoulder",
+          "reps": null
+        },
+        {
+          "id": "overhead-triceps",
+          "reps": null
+        }
+      ]
+    },
+    {
+      "id": "2026-09-14-bw-day-1",
+      "kind": "bodyweight",
+      "plan": "bw-day-1",
+      "date": "2026-09-14",
+      "seconds": 40,
+      "exercises": [
+        {
+          "id": "bw-plank",
+          "reps": null
+        },
+        {
+          "id": "bw-lunge",
+          "reps": 45
+        },
+        {
+          "id": "bw-push-up",
+          "reps": 29
+        },
+        {
+          "id": "bw-star-jump",
+          "reps": 70
+        }
+      ]
     }
   ]
 }
