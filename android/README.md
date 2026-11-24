@@ -59,9 +59,9 @@ on a phone with `adb install` to try it). Every upload to Play needs a higher
 ### App content answers
 
 - **Privacy policy:** https://rautaloki.dataplug-oy.com/privacy.html
-- **App access:** all functionality needs an account. Instructions for reviewers: *"Enter any new name
-  and a password of at least 8 characters, tap Log in, then tap 'Create user <name>'. No
-  invitation is needed."* (Or create a demo user and give its name and password.)
+- **App access:** all functionality needs an account. Instructions for reviewers: *"Tap 'Sign in with Google' and
+  pick any Google account. A new account gets an empty training log; no invitation is
+  needed."*
 - **Ads:** no ads.
 - **Content rating:** category *Reference, News, or Educational* (or *Utility*); no violence,
   sexual content, profanity, drugs, gambling, user-to-user communication or location sharing.

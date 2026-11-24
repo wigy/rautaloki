@@ -43,30 +43,16 @@ export async function getMe(): Promise<Me | null> {
   }
 }
 
-/** Log in, or sign up with `create`. Returns null for an unknown name unless `create` is set. */
-export async function login(name: string, password: string, create = false): Promise<Me | null> {
-  const res = await fetch('/api/login', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name, password, create }),
-  })
-  if (res.status === 404) return null
-  // A 401 here is a wrong password, not a lost session.
-  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `HTTP ${res.status}`)
-  return res.json()
+/** The Google OAuth client id the login button needs; empty if the server has none. */
+export async function getGoogleClientId(): Promise<string> {
+  return (await (await check(await fetch('/api/config'))).json()).googleClientId ?? ''
 }
 
 export async function logout(): Promise<void> {
   await check(await fetch('/api/logout', { method: 'POST' }))
 }
 
-/** Delete the logged-in user and all their data. Throws on a wrong password. */
-export async function deleteAccount(id: string, password: string): Promise<void> {
-  const res = await fetch(`/api/users/${id}`, {
-    method: 'DELETE',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ password }),
-  })
-  // A 401 here is a wrong password, not a lost session.
-  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `HTTP ${res.status}`)
+/** Delete the logged-in user and all their data. */
+export async function deleteAccount(id: string): Promise<void> {
+  await check(await fetch(`/api/users/${id}`, { method: 'DELETE' }))
 }

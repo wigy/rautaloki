@@ -77,29 +77,38 @@ export class Store {
     }
   }
 
-  /** Password hashes by user id. A user missing here has no password and cannot log in. */
-  async passwords(): Promise<Record<string, string>> {
+  /** Google account emails (lowercase) to user ids. A user missing here cannot log in. */
+  async logins(): Promise<Record<string, string>> {
     try {
-      return await this.read<Record<string, string>>('passwords.json')
+      return await this.read<Record<string, string>>('logins.json')
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === 'ENOENT') return {}
       throw err
     }
   }
 
-  async setPassword(id: string, hash: string): Promise<void> {
+  /** The email linked to a user, if any. */
+  async emailOf(id: string): Promise<string | undefined> {
+    return Object.entries(await this.logins()).find(([, user]) => user === id)?.[0]
+  }
+
+  /** Link a Google account to a user, replacing any email the user had before. */
+  async link(email: string, id: string): Promise<void> {
     await this.user(id)
-    await this.write('passwords.json', { ...(await this.passwords()), [id]: hash }, 0o600)
+    const key = email.trim().toLowerCase()
+    if (!/^[^@\s]+@[^@\s]+$/.test(key)) throw new Invalid('not an email address')
+    const rest = Object.fromEntries(Object.entries(await this.logins()).filter(([e, user]) => user !== id && e !== key))
+    await this.write('logins.json', { ...rest, [key]: id }, 0o600)
   }
 
   /**
-   * Remove a user and all their data for good. The password goes first, which also ends
+   * Remove a user and all their data for good. The login goes first, which also ends
    * every session, so a crash halfway leaves at worst a file nobody can log in to.
    */
   async deleteUser(id: string): Promise<void> {
     await this.user(id)
-    const { [id]: _, ...rest } = await this.passwords()
-    await this.write('passwords.json', rest, 0o600)
+    const rest = Object.fromEntries(Object.entries(await this.logins()).filter(([, user]) => user !== id))
+    await this.write('logins.json', rest, 0o600)
     await unlink(join(this.dir, `users/${id}.json`))
   }
 

@@ -40,31 +40,44 @@ npm test        # rule tests on fixtures/, plus a consistency check of data/ if 
 
 Node ≥ 24 runs the TypeScript server directly (type stripping), so only the UI
 has a build step. Settings are env vars: `PORT` (8910), `HOST` (0.0.0.0),
-`RAUTALOKI_DATA` (./data).
+`RAUTALOKI_DATA` (./data), `GOOGLE_CLIENT_ID` (required for logging in).
 
-Users log in with a **name and password**. Names match case-insensitively, and an
-unknown name can be created as a new user from the login screen, with the password
-given there (at least 8 characters). Each user can read and write only their own file.
-The session is an HttpOnly cookie holding a token signed with `data/secret` (created on
-first start; deleting it logs everyone out), and it is also marked Secure when the
-request arrives through an HTTPS proxy (`X-Forwarded-Proto: https`). After 5 wrong
-passwords in a row a user's login is held off for a minute per attempt.
+Users log in with their **Google account** (Google Identity Services, redirect mode:
+Google posts the signed ID token to `/api/login/google`, which the server verifies against
+Google's public keys with no extra dependencies). Set `GOOGLE_CLIENT_ID` to an OAuth
+client of type *Web application* in Google Cloud Console, with these in it:
 
-Tapping the name in the header opens the account screen: log out, the privacy policy
-(`public/privacy.html`), and *Delete account*, which asks for the password again and removes
-the user's file and password for good.
+- Authorized JavaScript origins: `https://rautaloki.dataplug-oy.com`, and for development
+  `http://localhost` and `http://localhost:5173`
+- Authorized redirect URIs: `https://rautaloki.dataplug-oy.com/api/login/google` and
+  `http://localhost:5173/api/login/google`
 
-Set or change a password from the shell, which also ends that user's old sessions:
+Google allows plain HTTP only on localhost, so on a phone use the HTTPS site.
+
+`data/logins.json` maps each Google email to a user id; that is the only thing that
+connects an account to its data. A Google account that is not linked yet gets a new, empty
+user named after the account (with a number if the name is taken), so signing up still
+needs no invitation. Link an existing user to an account from the shell, which also ends
+the user's sessions made with a previous email:
 
 ```bash
-node server/passwd.ts <name>    # asks for the password; RAUTALOKI_DATA as for the server
+node server/link.ts <email> <name>   # RAUTALOKI_DATA as for the server; no arguments lists the links
 ```
+
+The session is an HttpOnly cookie holding a token signed with `data/secret` (created on
+first start; deleting it logs everyone out) over the user id and the linked email, and it
+is also marked Secure when the request arrives through an HTTPS proxy
+(`X-Forwarded-Proto: https`).
+
+Tapping the name in the header opens the account screen: log out, the privacy policy
+(`public/privacy.html`), and *Delete account*, which after a confirmation removes the
+user's file and Google link for good.
 
 ### Docker
 
 ```bash
 docker build -t rautaloki .
-docker run -d -p 8910:8910 -v "$PWD/data:/data" rautaloki
+docker run -d -p 8910:8910 -v "$PWD/data:/data" -e GOOGLE_CLIENT_ID=... rautaloki
 ```
 
 The image runs as uid 1000 with the data in `/data`. Put it behind an HTTPS proxy
@@ -91,7 +104,7 @@ writer, so run one instance only.
 | `data/programs.json` | programs: per week a scheme and a percentage of the old best |
 | `data/weights.json` | loadable weights per equipment kind with the plates that make them |
 | `data/users/<id>.json` | one user: name, all their cycles, timer tempo per exercise, and body weight and stretching sessions |
-| `data/passwords.json` | scrypt password hashes by user id, never sent to the UI |
+| `data/logins.json` | Google account email → user id, never sent to the UI |
 | `data/secret` | the key session cookies are signed with |
 
 A cycle stores `scores`, one per program week: kg lifted, `"-"` for a skipped
@@ -106,7 +119,7 @@ actually performed, each with the repeats counted over all rounds or `null`. The
 exercises, days and routines are fixed in code (`shared/bodyweight.ts`,
 `shared/stretching.ts`), so they need no file in `data/`.
 
-New users are created from the login screen as `data/users/<id>.json`, with the id
+New users are created at their first Google login as `data/users/<id>.json`, with the id
 derived from the name.
 
 ## Rules

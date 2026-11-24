@@ -111,14 +111,18 @@ h2 {
   overflow: hidden;
 }
 
-.login button.primary {
-  width: 100%;
+.login .google {
+  /* Google's button is an iframe; under a dark color-scheme the browser paints a light
+     iframe with an opaque white backdrop. Light here keeps it transparent. */
+  color-scheme: light;
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+  margin: 8px 0 4px;
 }
 
-.notice {
-  margin-top: 14px;
-  border-top: 1px solid var(--line);
-  padding-top: 4px;
+.login .google + p {
+  text-align: center;
 }
 
 .saving {

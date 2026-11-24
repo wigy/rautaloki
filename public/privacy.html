@@ -39,18 +39,24 @@
 
     <h2>What is stored</h2>
     <ul>
-      <li><strong>Your account:</strong> the name you log in with, and your password as a salted scrypt hash (the
-        password itself is never stored).</li>
+      <li><strong>Your account:</strong> your name and the email address of the Google account you log in
+        with. Google tells the app only these and that the address is verified; the app gets no access to your Google
+        account, password or other data.</li>
       <li><strong>Your training data:</strong> what you enter in the app: lifting cycles, weights and dates, body weight
         and stretching sessions with the exercises and repeats, and your timer settings.</li>
       <li><strong>A session cookie</strong> that keeps you logged in. It is needed for the app to work and is not used
         for tracking.</li>
-      <li><strong>Technical logs:</strong> the server notes events such as a saved change or a wrong password with the
+      <li><strong>Technical logs:</strong> the server notes events such as a login or a saved change with the
         time and your account name, and the web server may log IP addresses of requests, for running the service and
         security.</li>
       <li><strong>Usage statistics:</strong> page views are counted with Umami, an analytics tool run by Dataplug Oy
         itself. It sets no cookies and builds no profile of you; the counts are anonymous.</li>
     </ul>
+    <p>
+      Logging in uses Google Sign-In: the login screen loads Google's sign-in button, and Google's own
+      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">privacy policy</a> applies to what
+      happens on Google's side.
+    </p>
     <p>
       The spoken timer uses your device's own speech synthesis; nothing is recorded or sent anywhere. The app does not
       use your location, contacts, camera or microphone, and shows no ads.
@@ -71,7 +77,7 @@
 
     <h2 id="delete">Deleting your account and data</h2>
     <p>
-      In the app, tap your name at the top, then <strong>Delete account</strong> and confirm with your password. Your
+      In the app, tap your name at the top, then <strong>Delete account</strong> and confirm. Your
       account and all your training data are removed from the server at once and for good.
     </p>
     <p>

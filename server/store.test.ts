@@ -15,15 +15,20 @@ afterEach(async () => {
 })
 
 describe('store', () => {
-  it('deletes a user with their password', async () => {
+  it('links one email per user and deletes a user with their login', async () => {
     const store = await fresh()
     const a = await store.createUser('Anna')
     const b = await store.createUser('Bert')
-    await store.setPassword(a.id, 'hash-a')
-    await store.setPassword(b.id, 'hash-b')
+    await store.link('Anna@Example.com', a.id)
+    await store.link('bert@example.com', b.id)
+    expect(await store.emailOf(a.id)).toBe('anna@example.com')
+    await store.link('anna@other.com', a.id)
+    expect(await store.logins()).toEqual({ 'bert@example.com': b.id, 'anna@other.com': a.id })
+    await expect(store.link('x@example.com', 'nobody')).rejects.toBeInstanceOf(NotFound)
+    await expect(store.link('not-an-email', a.id)).rejects.toBeInstanceOf(Invalid)
     await store.deleteUser(a.id)
     await expect(store.user(a.id)).rejects.toBeInstanceOf(NotFound)
-    expect(await store.passwords()).toEqual({ [b.id]: 'hash-b' })
+    expect(await store.logins()).toEqual({ 'bert@example.com': b.id })
     expect(await store.userIds()).toEqual([b.id])
     await expect(store.deleteUser(a.id)).rejects.toBeInstanceOf(NotFound)
   })

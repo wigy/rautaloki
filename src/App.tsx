@@ -107,7 +107,7 @@ export function App() {
   }
 
   if (me === undefined) return <main className="loading">{error ?? 'Loading…'}</main>
-  if (me === null) return <Login onLogin={setMe} />
+  if (me === null) return <Login />
   if (!ref) return <main className="loading">{error ?? 'Loading…'}</main>
 
   const signOut = async () => {

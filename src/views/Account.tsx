@@ -11,7 +11,6 @@ interface Props {
 }
 
 export function Account({ user, onSignOut, onDeleted }: Props) {
-  const [password, setPassword] = useState('')
   const [error, setError] = useState<string>()
   const [busy, setBusy] = useState(false)
   const [ask, setAsk] = useState<ConfirmRequest | null>(null)
@@ -28,7 +27,7 @@ export function Account({ user, onSignOut, onDeleted }: Props) {
         setBusy(true)
         setError(undefined)
         try {
-          await deleteAccount(user.id, password)
+          await deleteAccount(user.id)
           onDeleted()
         } catch (e) {
           setError(e instanceof Error ? e.message : String(e))
@@ -56,25 +55,11 @@ export function Account({ user, onSignOut, onDeleted }: Props) {
       <section className="card">
         <h2>Delete account</h2>
         <p className="small">Removes your account and all your training data from the server for good.</p>
-        <form
-          className="entry"
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (password) remove()
-          }}
-        >
-          <input
-            type="password"
-            autoComplete="current-password"
-            placeholder="Your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            aria-label="Password"
-          />
-          <button className="danger" disabled={!password || busy}>
-            Delete
+        <div className="row">
+          <button className="danger" disabled={busy} onClick={remove}>
+            Delete account
           </button>
-        </form>
+        </div>
         {error && (
           <p className="error" role="alert">
             {error}
