@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import type { Interval } from '../../shared/intervals.ts'
-import { say, useWakeLock } from '../speech.ts'
+import { FINISHED, say, useWakeLock } from '../speech.ts'
+import { InfoArt } from './HowToInfo.tsx'
 import { fmt, STALE } from './SetTimer.tsx'
 
 interface Props {
@@ -11,6 +12,8 @@ interface Props {
   labels: { work: string; rest: string }
   /** Picture of the exercise at an index of the plan's list. */
   picture?: (item: number) => string | undefined
+  /** How-to of the exercise at an index of the plan's list, opened from the (i) on its picture. */
+  howTo?: (item: number) => ReactNode
   /** Shown before the start, above the Start button: settings such as the level. */
   setup?: ReactNode
   /** The final screen, given the indices of the exercises that were performed. */
@@ -22,7 +25,7 @@ interface Props {
 const PERFORMED = 3
 
 /** Full-screen timer that runs an interval plan, speaks its cues and tracks what was done. */
-export function IntervalTimer({ plan, title, subtitle, labels, picture, setup, finish, onClose }: Props) {
+export function IntervalTimer({ plan, title, subtitle, labels, picture, howTo, setup, finish, onClose }: Props) {
   const run = useRef({ i: 0, start: 0, paused: null as number | null, fired: 0, running: false, done: new Set<number>() })
   const [now, setNow] = useState(() => performance.now())
   const [over, setOver] = useState(false)
@@ -41,7 +44,7 @@ export function IntervalTimer({ plan, title, subtitle, labels, picture, setup, f
     Object.assign(r, { i, start, fired: 0 })
     if (i >= plan.length) {
       r.running = false
-      say('done')
+      say(FINISHED)
       setOver(true)
     }
   }
@@ -106,6 +109,7 @@ export function IntervalTimer({ plan, title, subtitle, labels, picture, setup, f
   const keys = useRef((_: KeyboardEvent) => {})
   keys.current = (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey || !(e.key === 'p' || e.key === ' ')) return
+    if (document.querySelector('dialog[open]')) return
     if (e.target instanceof HTMLInputElement) return
     e.preventDefault()
     if (r.running && seg) togglePause()
@@ -137,7 +141,14 @@ export function IntervalTimer({ plan, title, subtitle, labels, picture, setup, f
     const art = picture?.(seg.item)
     body = (
       <>
-        {art && <img className="interval-art" src={art} alt="" />}
+        {art &&
+          (howTo ? (
+            <InfoArt key={seg.item} src={art} className="interval-art" name={seg.title}>
+              {howTo(seg.item)}
+            </InfoArt>
+          ) : (
+            <img className="interval-art" src={art} alt="" />
+          ))}
         <div className={`timer-phase ${tone}`}>
           {seg.kind === 'ready' ? 'Get ready' : seg.kind === 'work' ? labels.work : labels.rest}
         </div>

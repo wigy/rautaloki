@@ -1,11 +1,14 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { type Segment, stepTempo, tempoPercent } from '../../shared/timer.ts'
-import { say, useWakeLock } from '../speech.ts'
+import { FINISHED, say, useWakeLock } from '../speech.ts'
+import { InfoArt } from './HowToInfo.tsx'
 
 interface Props {
   segments: Segment[]
   title: string
   icon?: string
+  /** The exercise's how-to, opened from the (i) on its picture. */
+  howTo?: ReactNode
   scheme: string
   weight: string
   /** Factor on the seconds per repeat for this exercise, changeable also while running. */
@@ -20,7 +23,7 @@ interface Props {
 export const STALE = 2
 
 /** Full-screen timer that runs the segments and speaks their cues. */
-export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo, onDone, onClose }: Props) {
+export function SetTimer({ segments, title, icon, howTo, scheme, weight, tempo, onTempo, onDone, onClose }: Props) {
   // Timing lives in a ref so the interval reads current values; `now` only drives rendering.
   const run = useRef({ i: 0, start: 0, paused: null as number | null, fired: 0, running: false })
   const [now, setNow] = useState(() => performance.now())
@@ -34,7 +37,7 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
     Object.assign(run.current, { i, start, fired: 0 })
     if (i >= segments.length) {
       run.current.running = false
-      say('done')
+      say(FINISHED)
     }
   }
 
@@ -108,7 +111,7 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
   // Keys for a phone on a stand with a keyboard: p or space pauses, + and - change the tempo.
   const keys = useRef((_: KeyboardEvent) => {})
   keys.current = (e) => {
-    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (e.ctrlKey || e.metaKey || e.altKey || document.querySelector('dialog[open]')) return
     if (e.key === 'p' || e.key === ' ') {
       e.preventDefault()
       if (running) togglePause()
@@ -136,11 +139,22 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
     </div>
   )
 
+  const art = (className: string) =>
+    icon &&
+    (howTo ? (
+      <InfoArt src={icon} className={className} name={title}>
+        <h2>{title}</h2>
+        {howTo}
+      </InfoArt>
+    ) : (
+      <img className={className} src={icon} alt="" />
+    ))
+
   let body
   if (!r.running && r.i === 0) {
     body = (
       <>
-        {icon && <img className="timer-art" src={icon} alt="" />}
+        {art('timer-art')}
         <div className="timer-phase">{scheme}</div>
         <p className="muted">
           {sets} {sets === 1 ? 'set' : 'sets'}
@@ -204,7 +218,7 @@ export function SetTimer({ segments, title, icon, scheme, weight, tempo, onTempo
   return (
     <div className="timer" role="dialog" aria-label="Set timer">
       <div className="timer-head">
-        {icon && <img className="ex-icon" src={icon} alt="" />}
+        {art('ex-icon')}
         <div className="timer-title">
           <strong>{title}</strong>
           <div className="muted small">

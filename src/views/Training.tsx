@@ -129,6 +129,7 @@ function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: b
               segments={segments}
               title={ex.name}
               icon={icon}
+              howTo={<HowToBody id={cycle.exercise} />}
               scheme={p.scheme}
               weight={[kg(p.load?.total ?? p.proposal), p.plates].filter(Boolean).join(' · ')}
               tempo={tempo}
@@ -241,9 +242,18 @@ function CycleCard({ ctx, cycle, doneNow }: { ctx: Ctx; cycle: Cycle; doneNow: b
 }
 
 function HowToPanel({ id }: { id: string }) {
-  const h = HOWTO[id]
   return (
     <div className="settings howto">
+      <HowToBody id={id} />
+    </div>
+  )
+}
+
+/** The steps, what to watch and the general points, for the card and the timer's (i). */
+function HowToBody({ id }: { id: string }) {
+  const h = HOWTO[id]
+  return (
+    <>
       {h && (
         <>
           <h3>Steps</h3>
@@ -266,7 +276,7 @@ function HowToPanel({ id }: { id: string }) {
           <li key={t}>{t}</li>
         ))}
       </ul>
-    </div>
+    </>
   )
 }
 

@@ -1010,3 +1010,73 @@ header .who.active {
 header .link {
   white-space: nowrap;
 }
+
+/* The (i) on a timer's exercise picture and the how-to sheet it opens */
+.info-art {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  min-height: 0;
+  cursor: pointer;
+}
+
+.info-badge {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.6);
+  color: #fff;
+  font: italic 700 0.85rem/22px Georgia, serif;
+  text-align: center;
+  pointer-events: none;
+}
+
+.info-art .timer-art,
+.info-art .interval-art {
+  margin-bottom: 0;
+}
+
+.info-art:has(.timer-art),
+.info-art:has(.interval-art) {
+  margin-bottom: 6px;
+}
+
+.info-art:has(.timer-art) .info-badge,
+.info-art:has(.interval-art) .info-badge {
+  right: 8px;
+  bottom: 8px;
+  width: 30px;
+  height: 30px;
+  font-size: 1.1rem;
+  line-height: 30px;
+}
+
+.howto-sheet {
+  width: min(480px, calc(100vw - 24px));
+  max-height: calc(100dvh - 48px);
+}
+
+.howto-sheet-body {
+  padding: 16px 18px;
+  text-align: left;
+}
+
+.howto-sheet-body h2,
+.howto-sheet-body h3:first-child {
+  margin-top: 0;
+}
+
+.howto-sheet-body > button {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.howto-sheet-body:focus {
+  outline: none;
+}

@@ -122,6 +122,10 @@ function DayCard({ ctx, day, sessions, doneNow }: { ctx: Ctx; day: BwDay; sessio
             subtitle={`${bwLevel(work)} · ${BW_ROUNDS} rounds`}
             labels={{ work: 'Work', rest: 'Rest' }}
             picture={(i) => exerciseIcon(day.exercises[i])}
+            howTo={(i) => {
+              const ex = bwExercise(day.exercises[i])
+              return <HowToItem name={ex.name} steps={ex.steps} watch={ex.watch} />
+            }}
             setup={
               <>
                 <div className="timer-phase">{bwLevel(work)}</div>

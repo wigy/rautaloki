@@ -1,5 +1,8 @@
 import { useEffect } from 'react'
 
+/** Spoken when a timer has run its whole plan. */
+export const FINISHED = 'All done. Congratulations for completing this exercise.'
+
 /** Speak at once, cutting off anything still being said. English browser speech synthesis. */
 export function say(text: string, volume = 1) {
   const s = window.speechSynthesis

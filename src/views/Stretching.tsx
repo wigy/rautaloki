@@ -122,6 +122,10 @@ function RoutineCard({
             subtitle={dynamic ? `Dynamic · about ${minutes} min` : `Hold ${hold} s · about ${minutes} min`}
             labels={dynamic ? { work: 'Move', rest: 'Next' } : { work: 'Hold', rest: 'Change' }}
             picture={(i) => stretchIcon(routine.stretches[i])}
+            howTo={(i) => {
+              const s = stretch(routine.stretches[i])
+              return <HowToItem name={s.sides ? `${s.name}, each side` : s.name} steps={s.steps} watch={s.watch} />
+            }}
             setup={
               <>
                 <div className="timer-phase">{routine.name}</div>
