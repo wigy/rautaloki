@@ -118,15 +118,17 @@ on a phone with `adb install` to try it). Every upload to Play needs a higher
   > timed and spoken: hold, switch sides, next stretch.
   >
   > ALSO
-  > • Pictured how-to for every exercise and stretch
+  > • Pictured how-to for every exercise and stretch, also during the timers
   > • Records and history of every exercise
   > • A plain stopwatch that calls out the minutes
   > • Your data is kept on the server, so it is the same on every device
+  > • Try the demo first: no account needed
   >
   > No ads. Made in Finland by Dataplug Oy.
 
 - **App icon:** `../public/icon-512.png`
 - **Feature graphic:** `store/feature-graphic.png`
 - **Phone screenshots:** `store/phone-*.png`, in order
+- **AI asset declaration:** don't label assets.
 - **Category:** Health & Fitness. **Contact email:** dataplug.oy@gmail.com.
   **Website:** https://rautaloki.dataplug-oy.com
