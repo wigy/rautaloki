@@ -11,17 +11,23 @@
 //   GET  /api/users/:id     own cycles only (ETag header = version)
 //   PUT  /api/users/:id     replace them; send If-Match with the ETag, 412 if stale
 //   DELETE /api/users/:id   deletes the user and all their data, logs out
+//   GET  /api/feed?email=&from=&to=  the user's training as calendar events (shared/feed.ts),
+//                           for planner. Server to server: needs Authorization: Bearer
+//                           with EXERCISE_FEED_KEY; 404 if the key is unset or the email unknown
 //
 // Users log in with a Google account. The email -> user id links are in
 // data/logins.json, and an existing user is linked with `node server/link.ts`.
 // The cookie is a signed token (see auth.ts), not the bare user id.
 
+import { timingSafeEqual } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import { extname, join, normalize, resolve } from 'node:path'
 import { sessionToken, sessionUser } from './auth.ts'
 import { BadToken, googleKeys, verifyGoogleToken } from './google.ts'
+import { exerciseFeed } from '../shared/feed.ts'
+import { today } from '../shared/training.ts'
 import { Conflict, etag, Invalid, NotFound, Store } from './store.ts'
 
 class Unauthorized extends Error {}
@@ -38,6 +44,7 @@ const COOKIE_AGE = 365 * 24 * 3600
 const secret = await store.secret()
 const googleClientId = process.env.GOOGLE_CLIENT_ID ?? ''
 const keys = googleKeys()
+const feedKey = process.env.EXERCISE_FEED_KEY ?? ''
 if (!googleClientId) console.warn('GOOGLE_CLIENT_ID is not set: nobody can log in')
 
 const types: Record<string, string> = {
@@ -121,6 +128,21 @@ async function signUp(email: string, name: string | undefined) {
 }
 
 async function api(req: IncomingMessage, res: ServerResponse, path: string) {
+  if (path === '/api/feed' && req.method === 'GET') {
+    // Without a key configured the feed does not exist, so it cannot be probed.
+    const given = Buffer.from(req.headers.authorization ?? '')
+    const expected = Buffer.from(`Bearer ${feedKey}`)
+    if (!feedKey || given.length !== expected.length || !timingSafeEqual(given, expected)) throw new NotFound()
+    const q = new URL(req.url ?? '', 'http://x').searchParams
+    const date = (name: string) => {
+      const v = q.get(name)
+      if (v !== null && !/^\d{4}-\d{2}-\d{2}$/.test(v)) throw new Invalid(`${name} must be YYYY-MM-DD`)
+      return v ?? undefined
+    }
+    const id = (await store.logins())[(q.get('email') ?? '').trim().toLowerCase()]
+    if (!id) throw new NotFound()
+    return json(res, 200, exerciseFeed(await store.user(id), await store.reference(), today(), date('from'), date('to')))
+  }
   if (path === '/api/config' && req.method === 'GET') {
     return json(res, 200, { googleClientId })
   }

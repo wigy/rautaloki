@@ -40,7 +40,8 @@ npm test        # rule tests on fixtures/, plus a consistency check of data/ if 
 
 Node ≥ 24 runs the TypeScript server directly (type stripping), so only the UI
 has a build step. Settings are env vars: `PORT` (8910), `HOST` (0.0.0.0),
-`RAUTALOKI_DATA` (./data), `GOOGLE_CLIENT_ID` (required for logging in).
+`RAUTALOKI_DATA` (./data), `GOOGLE_CLIENT_ID` (required for logging in), `EXERCISE_FEED_KEY`
+(optional, enables the feed below).
 
 Users log in with their **Google account** (Google Identity Services, redirect mode:
 Google posts the signed ID token to `/api/login/google`, which the server verifies against
@@ -72,6 +73,22 @@ is also marked Secure when the request arrives through an HTTPS proxy
 Tapping the name in the header opens the account screen: log out, the privacy policy
 (`public/privacy.html`), and *Delete account*, which after a confirmation removes the
 user's file and Google link for good.
+
+### Exercise feed for planner
+
+`GET /api/feed?email=<address>&from=YYYY-MM-DD&to=YYYY-MM-DD` gives a user's training as
+all-day calendar events for [planner](https://github.com/wigy/planner)'s Exercises calendar
+(`shared/feed.ts`). It is server to server: set `EXERCISE_FEED_KEY` here and the same key in
+planner, which sends it as `Authorization: Bearer <key>`. Without the key, or for an email
+that is not linked, the answer is 404.
+
+- a lift result with its entry date: that day, done
+- results without a date (the history from the sheets): one event over the finished cycle
+- the weeks an unfinished cycle has left: one Monday-Sunday event per program week from
+  this week on (from next week if the cycle already had an entry this week), planned, with
+  this week's proposal or later weeks' plan × the best performance so far; TEST weeks
+  carry no weight
+- body weight and stretching sessions: their day, done; skipped weeks are left out
 
 ### Docker
 
