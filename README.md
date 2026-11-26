@@ -95,6 +95,10 @@ that is not linked, the answer is 404.
   carry no weight
 - body weight and stretching sessions: their day, or the time they ran if done through the
   timer; skipped weeks are left out
+- today's body weight day, planned, when one is due: not on one of the user's resting days,
+  not when a body weight session is already done today, and only if the user did body weight
+  in the 7 days before today. It is the first day not done this week (else the one done
+  longest ago), at the level the Body tab proposes
 
 An event has `allDay`: when true, `start` and `end` are dates (`end` exclusive), otherwise
 ISO instants.
@@ -129,7 +133,7 @@ writer, so run one instance only.
 | `data/catalog.json` | exercises: main/other muscles, equipment, level, reference URL |
 | `data/programs.json` | programs: per week a scheme and a percentage of the old best |
 | `data/weights.json` | loadable weights per equipment kind with the plates that make them |
-| `data/users/<id>.json` | one user: name, all their cycles, timer tempo per exercise, and body weight and stretching sessions |
+| `data/users/<id>.json` | one user: name, all their cycles, timer tempo per exercise, body weight and stretching sessions, and resting days |
 | `data/logins.json` | Google account email → user id, never sent to the UI |
 | `data/secret` | the key session cookies are signed with |
 
@@ -217,6 +221,12 @@ and the timer.
 Sources: ACSM's [stretching and flexibility guidelines](https://www.acsm.org/blog-detail/acsm-certified-blog/2021/03/18/stretching-and-flexibility-guidelines-update),
 Simic et al. 2013, [Does pre-exercise static stretching inhibit maximal muscular performance?](https://pubmed.ncbi.nlm.nih.gov/22316148/),
 Behm & Chaouachi 2011, [A review of the acute effects of static and dynamic stretching on performance](https://pubmed.ncbi.nlm.nih.gov/21373870/).
+
+## Settings
+
+The ⚙ button in the header opens the settings: **Resting days**, a Monday-Sunday toggle
+each, kept in the user's file as `restDays` (0 = Monday … 6 = Sunday). On a resting day the
+exercise feed plans no body weight training for planner.
 
 ## Stopwatch
 

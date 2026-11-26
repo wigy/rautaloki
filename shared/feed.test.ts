@@ -98,4 +98,35 @@ describe('exercise feed', () => {
     expect(some.length).toBeLessThan(all.length)
     for (const e of some) expect(e.start < to && e.end > from).toBe(true)
   })
+
+  describe('body weight due today', () => {
+    const bw = (date: string, plan = 'bw-day-1') => ({ id: `${date}-${plan}`, kind: 'bodyweight' as const, plan, date, seconds: 40, exercises: [] })
+    const due = (u: User) => exerciseFeed(u, ref, TODAY).events.filter((e) => e.id.startsWith('due/'))
+
+    it('plans the first day not done this week, at the last level, after body weight in the past week', () => {
+      expect(due(user([], [bw('2026-11-23')]))).toEqual([
+        expect.objectContaining({ title: 'Body weight, Day 2', start: TODAY, end: '2026-11-26', allDay: true, status: 'planned', kind: 'bodyweight' }),
+      ])
+      expect(due(user([], [bw('2026-11-23')]))[0].description).toMatch(/^Level 40:20: /)
+    })
+
+    it('counts the 7 days before today, from last week too', () => {
+      expect(due(user([], [bw('2026-11-18')]))).toHaveLength(1)
+      expect(due(user([], [bw('2026-11-17')]))).toHaveLength(0)
+    })
+
+    it('leaves it out on a rest day, when done today, and without recent body weight', () => {
+      const recent = [bw('2026-11-23')]
+      expect(due({ ...user([], recent), restDays: [2] })).toHaveLength(0) // Wednesday
+      expect(due({ ...user([], recent), restDays: [0, 6] })).toHaveLength(1)
+      expect(due(user([], [...recent, bw(TODAY, 'bw-day-2')]))).toHaveLength(0)
+      expect(due(user([], []))).toHaveLength(0)
+    })
+
+    it('takes the day done longest ago once every day is done this week', () => {
+      const all = ['bw-day-1', 'bw-day-2', 'bw-day-3', 'bw-day-4', 'bw-day-5']
+      const sessions = [bw('2026-11-23', 'bw-day-3'), ...all.filter((d) => d !== 'bw-day-3').map((d) => bw('2026-11-24', d))]
+      expect(due(user([], sessions))[0].title).toBe('Body weight, Day 3')
+    })
+  })
 })

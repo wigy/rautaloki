@@ -7,11 +7,12 @@ import { History } from './views/History.tsx'
 import { Login } from './views/Login.tsx'
 import { NewCycle } from './views/NewCycle.tsx'
 import { Records } from './views/Records.tsx'
+import { Settings } from './views/Settings.tsx'
 import { Stopwatch } from './views/Stopwatch.tsx'
 import { Stretching } from './views/Stretching.tsx'
 import { Training } from './views/Training.tsx'
 
-export type View = 'training' | 'new' | 'bodyweight' | 'stretch' | 'records' | 'history' | 'account'
+export type View = 'training' | 'new' | 'bodyweight' | 'stretch' | 'records' | 'history' | 'account' | 'settings'
 export type Update = (change: (user: User) => User) => void
 
 // New cycle is reached from the Lifts tab, and counts as part of it.
@@ -134,6 +135,18 @@ export function App() {
             <path d="M12 14V9.5M9.5 2.5h5M12 2.5V6M18.5 6.5l1.5-1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </button>
+        <button
+          className={`stopwatch-open ${view === 'settings' ? 'active' : ''}`}
+          onClick={() => go('settings')}
+          aria-label="Settings"
+          title="Settings"
+        >
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            {/* A cog: eight teeth drawn as dashes of a thick ring, round a ring with a hole. */}
+            <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="3.3 3.38" />
+            <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" strokeWidth="2.5" />
+          </svg>
+        </button>
         <button className="link" onClick={signOut}>
           Log out
         </button>
@@ -174,6 +187,8 @@ export function App() {
               setMe(null)
             }}
           />
+        ) : view === 'settings' ? (
+          <Settings data={ref} user={user} update={update} go={go} />
         ) : view === 'records' ? (
           <Records data={ref} user={user} update={update} go={go} />
         ) : (

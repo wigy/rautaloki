@@ -11,9 +11,12 @@
 //   This week shows the proposal as loaded; later weeks the plan corrected by the best
 //   performance so far, which is what the proposal will be if that holds; TEST no weight
 // - a body weight or stretching session: its day, or the time it ran, done
+// - today's body weight day, planned, when one is due (shared/sessions.ts bodyweightDue):
+//   not on the user's rest days, and only after body weight in the 7 days before
 // Skipped weeks ("-") are left out.
 
-import { bwDay, bwExercise } from './bodyweight.ts'
+import { bwDay, bwExercise, bwLevel } from './bodyweight.ts'
+import { bodyweightDue, proposedWork, sessionsOf } from './sessions.ts'
 import { stretch, routine } from './stretching.ts'
 import { bestPerformance, currentWeek, doneThisWeek, isTestWeek, plan, roundHalf, target, today, weekStart } from './training.ts'
 import type { Cycle, Reference, Span, User } from './types.ts'
@@ -156,9 +159,27 @@ function sessionEvents(user: User): FeedEvent[] {
   })
 }
 
+function dueEvents(user: User, today: string): FeedEvent[] {
+  const day = bodyweightDue(user, today)
+  if (!day) return []
+  const work = proposedWork(sessionsOf(user, 'bodyweight'), day.id)
+  return [
+    {
+      id: `due/bodyweight/${today}`,
+      title: `Body weight, ${day.name}`,
+      allDay: true,
+      start: today,
+      end: addDays(today, 1),
+      status: 'planned',
+      kind: 'bodyweight',
+      description: `Level ${bwLevel(work)}: ${day.exercises.map((id) => bwExercise(id).name).join(', ')}`,
+    },
+  ]
+}
+
 /** The user's events overlapping [from, to) (YYYY-MM-DD, either open), by start date. */
 export function exerciseFeed(user: User, ref: Reference, today: string, from?: string, to?: string): Feed {
-  const events = [...user.cycles.flatMap((c) => cycleEvents(c, ref, today)), ...sessionEvents(user)]
+  const events = [...user.cycles.flatMap((c) => cycleEvents(c, ref, today)), ...sessionEvents(user), ...dueEvents(user, today)]
     .filter((e) => {
       const [first, after] = days(e)
       return (!to || first < to) && (!from || after > from)

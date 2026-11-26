@@ -77,6 +77,8 @@ export interface User {
   tempo?: Record<string, number>
   /** Body weight and stretching sessions, oldest first. Missing in older data. */
   sessions?: Session[]
+  /** Days of the week without training, 0 = Monday … 6 = Sunday. Missing is none. */
+  restDays?: number[]
 }
 
 /** One exercise of a session as performed. */

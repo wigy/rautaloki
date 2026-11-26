@@ -1,7 +1,7 @@
 // Body weight and stretching sessions in the user's file: what to propose next time and
 // how to record a session, kept apart from the weight lifting cycles.
 
-import { BW_WORK_MAX, BW_WORK_MIN, BW_WORK_STEP } from './bodyweight.ts'
+import { BW_DAYS, BW_WORK_MAX, BW_WORK_MIN, BW_WORK_STEP, type BwDay } from './bodyweight.ts'
 import { HOLD_DEFAULT, HOLD_MAX, HOLD_MIN, HOLD_STEP } from './stretching.ts'
 import { weekStart } from './training.ts'
 import type { Performed, Session, Span, User } from './types.ts'
@@ -79,4 +79,36 @@ export function addSession(user: User, session: Session): User {
 
 export function removeSession(user: User, id: string): User {
   return { ...user, sessions: (user.sessions ?? []).filter((s) => s.id !== id) }
+}
+
+/** Day of the week of a date, 0 = Monday … 6 = Sunday. */
+export function weekday(date: string): number {
+  return (new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7
+}
+
+export function isRestDay(user: User, date: string): boolean {
+  return (user.restDays ?? []).includes(weekday(date))
+}
+
+/**
+ * The body weight day to do today, if one is due: not on a rest day, not when a session is
+ * already done today, and only for someone who did body weight in the 7 days before today.
+ * The day is the first not done this week, else the one done longest ago.
+ */
+export function bodyweightDue(user: User, today: string): BwDay | null {
+  if (isRestDay(user, today)) return null
+  const sessions = sessionsOf(user, 'bodyweight')
+  const weekAgo = addDays(today, -7)
+  if (sessions.some((s) => s.date === today)) return null
+  if (!sessions.some((s) => s.date >= weekAgo && s.date < today)) return null
+  const fresh = BW_DAYS.find((d) => !doneThisWeek(sessions, d.id, today))
+  if (fresh) return fresh
+  const lastDate = (d: BwDay) => lastOf(sessions, d.id)?.date ?? ''
+  return BW_DAYS.reduce((a, d) => (lastDate(d) < lastDate(a) ? d : a))
+}
+
+function addDays(date: string, days: number): string {
+  const d = new Date(`${date}T00:00:00Z`)
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
 }

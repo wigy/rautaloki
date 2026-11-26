@@ -192,6 +192,11 @@ function validateUser(user: User, id: string): void {
     if (!t || typeof t !== 'object' || Array.isArray(t)) fail('tempo must be an object')
     if (!Object.values(t).every((v) => typeof v === 'number' && v > 0)) fail('tempo values must be positive numbers')
   }
+  if (user.restDays !== undefined) {
+    const r = user.restDays
+    if (!Array.isArray(r) || !r.every((d) => Number.isInteger(d) && d >= 0 && d <= 6) || new Set(r).size !== r.length)
+      fail('restDays must be distinct weekdays 0-6')
+  }
   if (user.sessions !== undefined) {
     if (!Array.isArray(user.sessions)) fail('sessions must be an array')
     const sids = new Set<string>()
