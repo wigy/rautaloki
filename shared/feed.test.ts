@@ -129,4 +129,41 @@ describe('exercise feed', () => {
       expect(due(user([], sessions))[0].title).toBe('Body weight, Day 3')
     })
   })
+
+  describe('stretching due today', () => {
+    const st = (date: string, plan: string) => ({ id: `${date}-${plan}`, kind: 'stretch' as const, plan, date, seconds: 45, exercises: [] })
+    const due = (u: User, today = TODAY) => exerciseFeed(u, ref, today).events.filter((e) => e.id.startsWith('due/stretch/'))
+
+    it('plans the routine done longest ago, after stretching in the past week', () => {
+      const sessions = [st('2026-11-01', 'hips-back'), st('2026-11-10', 'warm-up'), st('2026-11-20', 'full-body')]
+      expect(due(user([], sessions))).toEqual([
+        expect.objectContaining({ title: 'Hips and back', start: TODAY, end: '2026-11-26', allDay: true, status: 'planned', kind: 'stretch' }),
+      ])
+      expect(due(user([], sessions))[0].description).toMatch(/^Hold 45 s: Kneeling hip flexor stretch, /)
+    })
+
+    it('counts the 7 days before today, rest days included', () => {
+      expect(due(user([], [st('2026-11-18', 'warm-up')]))).toHaveLength(1)
+      expect(due(user([], [st('2026-11-17', 'warm-up')]))).toHaveLength(0)
+      expect(due({ ...user([], [st('2026-11-23', 'warm-up')]), restDays: [2] })).toHaveLength(1)
+    })
+
+    it('leaves it out when stretched today or without recent stretching', () => {
+      expect(due(user([], [st('2026-11-23', 'warm-up'), st(TODAY, 'full-body')]))).toHaveLength(0)
+      expect(due(user([], []))).toHaveLength(0)
+    })
+
+    it('picks among routines never done, the same all day but not every day', () => {
+      const titles = new Set<string>()
+      for (let d = 0; d < 30; d++) {
+        const day = addDays('2026-11-24', d)
+        const v = user([], [st(addDays(day, -1), 'warm-up')])
+        const [e] = due(v, day)
+        expect(['Full body', 'Hips and back']).toContain(e.title)
+        expect(due(v, day)[0].title).toBe(e.title)
+        titles.add(e.title)
+      }
+      expect(titles.size).toBe(2)
+    })
+  })
 })

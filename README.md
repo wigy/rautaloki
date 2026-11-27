@@ -99,6 +99,11 @@ that is not linked, the answer is 404.
   not when a body weight session is already done today, and only if the user did body weight
   in the 7 days before today. It is the first day not done this week (else the one done
   longest ago), at the level the Body tab proposes
+- today's stretching routine, planned, when one is due: not when a stretching session is
+  already done today, and only if the user stretched in the 7 days before today (resting
+  days included). It is the routine done longest ago, one never done first; a tie is broken
+  at random, but the same way all day so the event stays put, with the hold the Stretch
+  tab proposes
 
 An event has `allDay`: when true, `start` and `end` are dates (`end` exclusive), otherwise
 ISO instants.

@@ -13,10 +13,12 @@
 // - a body weight or stretching session: its day, or the time it ran, done
 // - today's body weight day, planned, when one is due (shared/sessions.ts bodyweightDue):
 //   not on the user's rest days, and only after body weight in the 7 days before
+// - today's stretching routine, planned, when one is due (shared/sessions.ts stretchDue):
+//   only after stretching in the 7 days before; the routine done longest ago
 // Skipped weeks ("-") are left out.
 
 import { bwDay, bwExercise, bwLevel } from './bodyweight.ts'
-import { bodyweightDue, proposedWork, sessionsOf } from './sessions.ts'
+import { bodyweightDue, proposedHold, proposedWork, sessionsOf, stretchDue } from './sessions.ts'
 import { stretch, routine } from './stretching.ts'
 import { bestPerformance, currentWeek, doneThisWeek, isTestWeek, plan, roundHalf, target, today, weekStart } from './training.ts'
 import type { Cycle, Reference, Span, User } from './types.ts'
@@ -160,6 +162,28 @@ function sessionEvents(user: User): FeedEvent[] {
 }
 
 function dueEvents(user: User, today: string): FeedEvent[] {
+  return [...bodyweightDueEvents(user, today), ...stretchDueEvents(user, today)]
+}
+
+function stretchDueEvents(user: User, today: string): FeedEvent[] {
+  const r = stretchDue(user, today)
+  if (!r) return []
+  const level = r.kind === 'dynamic' ? 'Dynamic' : `Hold ${proposedHold(sessionsOf(user, 'stretch'), r.id)} s`
+  return [
+    {
+      id: `due/stretch/${today}`,
+      title: r.name,
+      allDay: true,
+      start: today,
+      end: addDays(today, 1),
+      status: 'planned',
+      kind: 'stretch',
+      description: `${level}: ${r.stretches.map((id) => stretch(id).name).join(', ')}`,
+    },
+  ]
+}
+
+function bodyweightDueEvents(user: User, today: string): FeedEvent[] {
   const day = bodyweightDue(user, today)
   if (!day) return []
   const work = proposedWork(sessionsOf(user, 'bodyweight'), day.id)

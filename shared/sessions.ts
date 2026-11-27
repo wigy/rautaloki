@@ -2,7 +2,7 @@
 // how to record a session, kept apart from the weight lifting cycles.
 
 import { BW_DAYS, BW_WORK_MAX, BW_WORK_MIN, BW_WORK_STEP, type BwDay } from './bodyweight.ts'
-import { HOLD_DEFAULT, HOLD_MAX, HOLD_MIN, HOLD_STEP } from './stretching.ts'
+import { HOLD_DEFAULT, HOLD_MAX, HOLD_MIN, HOLD_STEP, ROUTINES, type Routine } from './stretching.ts'
 import { weekStart } from './training.ts'
 import type { Performed, Session, Span, User } from './types.ts'
 
@@ -105,6 +105,30 @@ export function bodyweightDue(user: User, today: string): BwDay | null {
   if (fresh) return fresh
   const lastDate = (d: BwDay) => lastOf(sessions, d.id)?.date ?? ''
   return BW_DAYS.reduce((a, d) => (lastDate(d) < lastDate(a) ? d : a))
+}
+
+/**
+ * The stretching routine to do today, if one is due: not when a stretching session is
+ * already done today, and only for someone who stretched in the 7 days before today. Rest
+ * days count, as stretching suits them. The routine is the one done longest ago (never done
+ * first); a tie is broken at random, but the same way all day, so the feed stays put.
+ */
+export function stretchDue(user: User, today: string): Routine | null {
+  const sessions = sessionsOf(user, 'stretch')
+  const weekAgo = addDays(today, -7)
+  if (sessions.some((s) => s.date === today)) return null
+  if (!sessions.some((s) => s.date >= weekAgo && s.date < today)) return null
+  const lastDate = (r: Routine) => lastOf(sessions, r.id)?.date ?? ''
+  const oldest = ROUTINES.map(lastDate).reduce((a, d) => (d < a ? d : a))
+  const ties = ROUTINES.filter((r) => lastDate(r) === oldest)
+  return ties[hash(`${user.id}/${today}`) % ties.length]
+}
+
+/** A non-negative 32-bit hash (FNV-1a) of a string. */
+function hash(text: string): number {
+  let h = 0x811c9dc5
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193)
+  return h >>> 0
 }
 
 function addDays(date: string, days: number): string {
